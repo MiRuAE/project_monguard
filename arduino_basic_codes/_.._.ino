@@ -29,7 +29,7 @@ void setup() {
   }
 }
 
-// ">" 표정 정의
+// "ㅡ" 표정 정의
 const uint8_t arrowRight[8] = {
   0b00000000,
   0b00000000,
@@ -41,7 +41,7 @@ const uint8_t arrowRight[8] = {
   0b00000000
 };
 
-// "<" 표정 정의
+// "ㅡ" 표정 정의
 const uint8_t arrowLeft[8] = {
   0b00000000,
   0b00000000,
@@ -56,7 +56,7 @@ const uint8_t arrowLeft[8] = {
 void loop() {
   Serial.println("");
 
-  // 첫 번째 매트릭스에 ">" 표정 표시
+  // 첫 번째 매트릭스에 "ㅡ" 표정 표시
   for (uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
     write_Max7219(0, row + 1, arrowRight[row]); // 첫 번째 매트릭스
   }
@@ -67,7 +67,7 @@ void loop() {
     write_Max7219(2, row + 1, 0x00); // 세 번째 매트릭스
   }
 
-  // 네 번째 매트릭스에 "<" 표정 표시
+  // 네 번째 매트릭스에 "ㅡ" 표정 표시
   for (uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
     write_Max7219(3, row + 1, arrowLeft[row]); // 네 번째 매트릭스
   }
