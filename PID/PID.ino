@@ -12,29 +12,20 @@ BLDCDriver3PWM driver1 = BLDCDriver3PWM(3, 5, 6, 7);
 // MPU6050 instance
 MPU6050 mpu;
 
-const int potPin_p = A0;
-const int potPin_i = A1;
-const int potPin_d = A2;
-
-float pid_p = 0;
-float pid_i = 0;
-float pid_d = 0;
-
 // PID variables for motor 0
 double setpoint0, input0, output0;
-PID pid0(&input0, &output0, &setpoint0, pid_p, pid_i, 3, DIRECT);
+double Kp0 = 1.5, Ki0 = 4.2, Kd0 = 0.64;
+PID pid0(&input0, &output0, &setpoint0, Kp0, Ki0, Kd0, DIRECT);
 
 // PID variables for motor 1
 double setpoint1, input1, output1;
-PID pid1(&input1, &output1, &setpoint1, pid_p, pid_i, 3, DIRECT);
+double Kp1 = 1.5, Ki1 = 4.2, Kd1 = 0.64;
+PID pid1(&input1, &output1, &setpoint1, Kp1, Ki1, Kd1, DIRECT);
 
 void setup() {
   Serial.begin(115200);
   Wire.begin();
   mpu.initialize();
-  pinMode(potPin_p, INPUT);
-  pinMode(potPin_i, INPUT);
-  pinMode(potPin_d, INPUT);
 
   // Check MPU6050 connection
   if (mpu.testConnection()) {
@@ -81,20 +72,6 @@ void loop() {
   // Get MPU6050 angle
   int16_t ax, ay, az;
   mpu.getAcceleration(&ax, &ay, &az);
-  
-  // Read potentiometer values and map to suitable PID ranges
-  float p_value = analogRead(potPin_p) / 1023.0 * 10; // Assuming PID P range 0-10
-  float i_value = analogRead(potPin_i) / 1023.0 * 10; // Assuming PID I range 0-10
-  float d_value = analogRead(potPin_d) / 1023.0 * 10; // Assuming PID D range 0-10
-
-  // Update PID parameters
-  pid_p = p_value;
-  pid_i = i_value;
-  pid_d = d_value;
-
-  // Apply new PID tunings
-  pid0.SetTunings(pid_p, pid_i, pid_d);
-  pid1.SetTunings(pid_p, pid_i, pid_d);
 
   // Calculate angle
   input0 = atan2(ay, az) * RAD_TO_DEG;
@@ -109,18 +86,52 @@ void loop() {
   motor1.move(output1);
 
   // Print angle and motor commands
-  Serial.print(" PID_P: ");
-  Serial.print(pid_p);
-  Serial.print(" PID_I: ");
-  Serial.print(pid_i);
-  Serial.print(" PID_D: ");
-  Serial.print(pid_d);
-  Serial.print(" // Angle: ");
+  Serial.print("Angle: ");
   Serial.print(input0);
   Serial.print(" Output0: ");
   Serial.print(output0);
   Serial.print(" Output1: ");
   Serial.println(output1);
 
-  delay(20); // Adjust the delay as needed
+  // Check for serial input to adjust PID parameters
+  if (Serial.available() > 0) {
+    char ch = Serial.read();
+    double val = Serial.parseFloat();
+    switch (ch) {
+      case 'p':
+        Kp0 = val;
+        pid0.SetTunings(Kp0, Ki0, Kd0);
+        Kp1 = val;
+        pid1.SetTunings(Kp1, Ki1, Kd1);
+        break;
+      case 'i':
+        Ki0 = val;
+        pid0.SetTunings(Kp0, Ki0, Kd0);
+        Ki1 = val;
+        pid1.SetTunings(Kp1, Ki1, Kd1);
+        break;
+      case 'd':
+        Kd0 = val;
+        pid0.SetTunings(Kp0, Ki0, Kd0);
+        Kd1 = val;
+        pid1.SetTunings(Kp1, Ki1, Kd1);
+        break;
+      case 's': // Setpoint
+        setpoint0 = val;
+        setpoint1 = val;
+        break;
+    }
+  }
+
+  // Print current PID values
+  Serial.print("Kp: ");
+  Serial.print(Kp0);
+  Serial.print(" Ki: ");
+  Serial.print(Ki0);
+  Serial.print(" Kd: ");
+  Serial.print(Kd0);
+  Serial.print(" Setpoint: ");
+  Serial.println(setpoint0);
+
+  delay(1000); // Adjust the delay as needed
 }
