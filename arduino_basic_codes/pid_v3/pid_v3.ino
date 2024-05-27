@@ -13,8 +13,8 @@ BLDCDriver3PWM driver1 = BLDCDriver3PWM(3, 5, 6, 7);
 MPU6050 mpu;
 
 const int potPin_p = A0;
-const int potPin_i = A2;
-const int potPin_d = A1;
+const int potPin_i = A1;
+const int potPin_d = A2;
 
 // PID variables for motor 0
 double setpoint0, input0, output0;
@@ -43,8 +43,8 @@ void setup() {
   // Initialize BLDC drivers
   driver0.voltage_power_supply = 12;
   driver1.voltage_power_supply = 12;
-  driver0.voltage_limit = 6;
-  driver1.voltage_limit = 6;
+  driver0.voltage_limit = 8;
+  driver1.voltage_limit = 8;
   driver0.init();
   driver1.init();
 
@@ -67,8 +67,8 @@ void setup() {
   setpoint1 = 0; // Desired angle (0 degrees for balance)
   pid0.SetMode(AUTOMATIC);
   pid1.SetMode(AUTOMATIC);
-  pid0.SetOutputLimits(-15, 15); // Motor output range
-  pid1.SetOutputLimits(-15, 15); // Motor output range
+  pid0.SetOutputLimits(-11, 11); // Motor output range
+  pid1.SetOutputLimits(-11, 11); // Motor output range
 
   Serial.println("Setup complete");
 }
@@ -80,14 +80,14 @@ void loop() {
   
   // Read potentiometer values and map to suitable PID ranges
   double pid_p = analogRead(potPin_p) / 10230.0 * 10; // Assuming PID P range 0-10
-  double pid_i = analogRead(potPin_i) / 10230.0 * 10; // Assuming PID I range 0-10
-  double pid_d = analogRead(potPin_d) / 102300.0 * 10; // Assuming PID D range 0-10
+  double pid_i = analogRead(potPin_i) / 10230.0 * 20; // Assuming PID I range 0-10
+  double pid_d = analogRead(potPin_d) / 10230.0 * 100; // Assuming PID D range 0-10
 
   // Apply new PID tunings
-  //pid0.SetTunings(pid_p, pid_i, pid_d);
-  //pid1.SetTunings(pid_p, pid_i, pid_d);
-  pid0.SetTunings(pid_p, 0.0015, 0.001);
-  pid1.SetTunings(pid_p, 0.0015, 0.001);
+  // pid0.SetTunings(pid_p, pid_i, pid_d);
+  // pid1.SetTunings(pid_p, pid_i, pid_d);
+  pid0.SetTunings(pid_p, pid_i, 0.0043);
+  pid1.SetTunings(pid_p, pid_i, 0.0043);
 
   // Calculate angle
   input0 = atan2(ay, az) * RAD_TO_DEG;
@@ -115,5 +115,5 @@ void loop() {
   Serial.print(" Output1: ");
   Serial.println(output1);
 
-  delay(20); // Adjust the delay as needed
+  delay(10); // Adjust the delay as needed
 }
