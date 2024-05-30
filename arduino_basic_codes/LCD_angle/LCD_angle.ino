@@ -41,8 +41,10 @@ void loop() {
   if (!isnan(accAngle)) {
     Serial.println(accAngle);
     lcd.setCursor(0, 0);
-    lcd.print("Angle: ");
-    lcd.print(accAngle);
+    lcd.print("YAngle: ");
+    lcd.println(accY);
+    lcd.print("ZAngle: ");
+    lcd.println(accZ);
   } else {
     lcd.setCursor(0, 0);
     lcd.print("Invalid Angle");

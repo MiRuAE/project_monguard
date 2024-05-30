@@ -14,6 +14,7 @@ void setup() {
   myservo2.attach(10);
 }
 
+
 void loop() {
   walkForward();
   delay(2000);
