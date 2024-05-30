@@ -11,7 +11,22 @@ const int motorPin2 =10;
 const int motorPin3 =11;
 
 // Variables
-int pwmSin[] = {127,110,94,78,64,50,37,26,17,10,4,1,0,1,4,10,17,26,37,50,64,78,94,110,127,144,160,176,191,204,217,228,237,244,250,253,255,253,250,244,237,228,217,204,191,176,160,144,127}; // array of PWM duty values for 8-bit timer - sine function
+int pwmSin[] = {
+  127,110,94,78,
+  64,50,37,26,
+  17,10,4,1,
+  0,1,4,10,
+  17,26,37,50,
+  64,78,94,110,
+  127,144,160,176,
+  191,204,217,228,
+  237,244,250,253,
+  255,253,250,244,
+  237,228,217,204,
+  191,176,160,144,
+  127
+}; // array of PWM duty values for 8-bit timer - sine function
+
 int currentStepA=0; //initial pointer at 0   degrees for coil A
 int currentStepB=16;//initial pointer at 120 degrees for coil B
 int currentStepC=32;//initial pointer at 240 degrees for coil C
@@ -69,10 +84,10 @@ void move()
   //delay(5); 
 
   //This will give you open loop speed control with the potentiometer
-  //delay(sensorValue/10);
+  delay(sensorValue/10);
 
   //This will give you open loop position control with the potentiometer
-  currentStepA = sensorValue/5; //divide by a number to affect the ratio of pot position : motor position
+  //currentStepA = sensorValue/5; //divide by a number to affect the ratio of pot position : motor position
 
  ////////////
 

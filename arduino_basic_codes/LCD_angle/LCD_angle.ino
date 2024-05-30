@@ -30,7 +30,7 @@ void setup() {
 
   lcd.setCursor(0, 1);
   lcd.print("Initializing...");
-  delay(1000);  // 초기 메시지 표시를 위한 지연
+  delay(1000);
   lcd.clear();
 }
 
@@ -50,5 +50,5 @@ void loop() {
     lcd.print("Invalid Angle");
   }
 
-  delay(100); // 적절한 딜레이 추가
+  delay(100);
 }
