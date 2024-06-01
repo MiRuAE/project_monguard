@@ -13,5 +13,6 @@ void loop() {
   myMonguard.dot(); myMonguard.dot(); myMonguard.dot();
   myMonguard.dash(); myMonguard.dash(); myMonguard.dash();
   myMonguard.dot(); myMonguard.dot(); myMonguard.dot();
+  myMonguard.add(3,4);
   delay(3000);
 }
