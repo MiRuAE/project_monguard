@@ -30,7 +30,7 @@ void loop() {
   if (transformedPitchAngle > 270) transformedPitchAngle -= 360;
 
   if (!isnan(transformedPitchAngle)) {
-    Serial.print(" | Pitch Angle: ");
+    Serial.print("Pitch Angle: ");
     Serial.println(transformedPitchAngle);
   } else {
     Serial.println("Invalid Angle");
