@@ -37,9 +37,9 @@ void setup() {
   // limit the maximal dc voltage the driver can set
   // as a protection measure for the low-resistance motors
   // this value is fixed on startup
-  driver0.voltage_limit = 6;
+  driver0.voltage_limit = 12;
   driver0.init();
-  driver1.voltage_limit = 6;
+  driver1.voltage_limit = 12;
   driver1.init();
   // link the motor and the driver
   motor0.linkDriver(&driver0);
@@ -49,8 +49,8 @@ void setup() {
   // limit the voltage to be set to the motor
   // start very low for high resistance motors
   // current = voltage / resistance, so try to be well under 1Amp
-  motor0.voltage_limit = 3;   // [V]
-  motor1.voltage_limit = 3;   // [V]
+  motor0.voltage_limit = 6;   // [V]
+  motor1.voltage_limit = 6;   // [V]
  
   // open loop control config
   motor0.controller = MotionControlType::velocity_openloop;
