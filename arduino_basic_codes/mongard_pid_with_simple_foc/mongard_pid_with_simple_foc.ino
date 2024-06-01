@@ -7,7 +7,7 @@
 #include "Wire.h"
 #endif
 
-MPU6050 mpu;
+MPU6050 mpu(0x68); // 기본 I2C 주소는 0x68
 
 bool dmpReady = false;    // DMP 초기화가 성공하면 true로 설정
 uint8_t mpuIntStatus;     // MPU의 실제 인터럽트 상태 바이트를 저장
@@ -83,6 +83,9 @@ void setup() {
     pid.SetMode(AUTOMATIC);
     pid.SetSampleTime(10);
     pid.SetOutputLimits(-255, 255);
+
+    // FIFO 버퍼 리셋
+    mpu.resetFIFO();
   } else {
     Serial.print(F("DMP 초기화 실패 (코드 "));
     Serial.print(devStatus);
