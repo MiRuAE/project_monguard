@@ -6,8 +6,8 @@
 // BLDCMotor motor = BLDCMotor(pole pair number);
 BLDCMotor motor = BLDCMotor(11);
 // BLDCDriver3PWM driver = BLDCDriver3PWM(pwmA, pwmB, pwmC, Enable(optional));
-BLDCDriver3PWM driver = BLDCDriver3PWM(9, 5, 6, 8);
-//BLDCDriver3PWM driver = BLDCDriver3PWM(9, 10,11, 8);
+BLDCDriver3PWM driver = BLDCDriver3PWM(9, 10, 11, 8);
+//BLDCDriver3PWM driver = BLDCDriver3PWM(3, 5, 6, 8);
 
 
 // Stepper motor & driver instance
@@ -28,11 +28,11 @@ void setup() {
 
   // driver config
   // power supply voltage [V]
-  driver.voltage_power_supply = 12;
+  driver.voltage_power_supply = 24;
   // limit the maximal dc voltage the driver can set
   // as a protection measure for the low-resistance motors
   // this value is fixed on startup
-  driver.voltage_limit = 6;
+  driver.voltage_limit = 12;
   driver.init();
   // link the motor and the driver
   motor.linkDriver(&driver);
@@ -41,7 +41,7 @@ void setup() {
   // limit the voltage to be set to the motor
   // start very low for high resistance motors
   // current = voltage / resistance, so try to be well under 1Amp
-  motor.voltage_limit = 3;   // [V]
+  motor.voltage_limit = 6;   // [V]
  
   // open loop control config
   motor.controller = MotionControlType::velocity_openloop;

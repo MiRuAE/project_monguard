@@ -19,14 +19,14 @@ BLDCDriver3PWM driver1 = BLDCDriver3PWM(3, 5, 6, 7);
 const int potPin = A1;  // INPUT pot control for speed or position
 
 //target variable
-float target_velocity = 10;
+// float target_velocity = 10;
 
-// instantiate the commander
-Commander command = Commander(Serial);
-void doTarget0(char* cmd) { command.scalar(&target_velocity, cmd); }
-void doLimit0(char* cmd) { command.scalar(&motor0.voltage_limit, cmd); }
-void doTarget1(char* cmd) { command.scalar(&target_velocity, cmd); }
-void doLimit1(char* cmd) { command.scalar(&motor1.voltage_limit, cmd); }
+// // instantiate the commander
+// Commander command = Commander(Serial);
+// void doTarget0(char* cmd) { command.scalar(&target_velocity, cmd); }
+// void doLimit0(char* cmd) { command.scalar(&motor0.voltage_limit, cmd); }
+// void doTarget1(char* cmd) { command.scalar(&target_velocity, cmd); }
+// void doLimit1(char* cmd) { command.scalar(&motor1.voltage_limit, cmd); }
 
 void setup() {
 
@@ -61,12 +61,12 @@ void setup() {
   motor1.init();
 
   // add target command T
-  command.add('T', doTarget0, "target velocity");
-  command.add('L', doLimit0, "voltage limit");
+  // command.add('T', doTarget0, "target velocity");
+  // command.add('L', doLimit0, "voltage limit");
 
-  Serial.begin(115200);
-  Serial.println("Motor ready!");
-  Serial.println("Set target velocity [rad/s]");
+  // Serial.begin(115200);
+  // Serial.println("Motor ready!");
+  // Serial.println("Set target velocity [rad/s]");
 
   pinMode(potPin, INPUT);
   
@@ -99,5 +99,5 @@ void loop() {
  Serial.println(speed);
 
   // user communication
-  command.run();
+  //command.run();
 }
