@@ -1,6 +1,6 @@
 #include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(2, 3); // TX=2, RX=3 BLUETOOTH MODULE
+SoftwareSerial mySerial(2, 4); // TX=2, RX=3 BLUETOOTH MODULE
 
 void setup() {
   Serial.begin(9600);       // 시리얼 통신 시작, 전송 속도 9600
