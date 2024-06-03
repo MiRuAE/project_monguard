@@ -1,5 +1,5 @@
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(2, 3); // TX=2, RX=3 BLUETOOTH MODULE
+SoftwareSerial mySerial(2, 4); // TX=2, RX=3 BLUETOOTH MODULE
 void setup() {
 Serial.begin(9600);
 Serial.println("Enter AT commands:");

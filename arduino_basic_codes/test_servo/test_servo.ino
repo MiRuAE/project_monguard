@@ -1,7 +1,7 @@
-#define NEUTRAL1 3150 // Calibrated neutral value for servo 1 (black, white, white) (in microseconds)
-#define NEUTRAL2 3050 // Calibrated neutral value for servo 2 (green, blue, purtple) (in microseconds)
+#define NEUTRAL1 2250 // Calibrated neutral value for servo 1 (black, white, white) (in microseconds)
+#define NEUTRAL2 2250 // Calibrated neutral value for servo 2 (green, blue, purtple) (in microseconds)
 
-#define ANGLE_RANGE 600 // Maximum deviation from neutral
+#define ANGLE_RANGE  300// Maximum deviation from neutral
 
 void setup() {
   Serial.begin(9600);

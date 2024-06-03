@@ -34,7 +34,6 @@ int read_ADC(uint8_t channel) {
   return ADC;
 }
 
-
 void setup() {
   Serial.begin(9600);
 
@@ -68,6 +67,7 @@ void loop() {
     Serial.println("A: No  B: Yes  C: No  D: No");
   } else if (!(buttonState & PORTD_BUTTON_C)) {
     Serial.println("A: No  B: No  C: Yes  D: No");
+    
   } else if (!(buttonState & PORTD_BUTTON_D)) {
     Serial.println("A: No  B: No  C: No  D: Yes");
   } else {
