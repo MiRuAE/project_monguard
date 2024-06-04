@@ -30,16 +30,17 @@ void setup() {
   init_ADC();
 
   // Configure pins
-  pinMode(ENABLE_PIN, OUTPUT);
-  pinMode(DIR_F_PIN, OUTPUT);
-  pinMode(DIR_B_PIN, OUTPUT);
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  DDRD |= (1 << PD3);  // Set PD3 (ENABLE_PIN) as output
+  DDRD |= (1 << PD7);  // Set PD7 (DIR_F_PIN) as output
+  DDRB |= (1 << PB0);  // Set PB0 (DIR_B_PIN) as output
+  DDRB &= ~(1 << PB4); // Set PB4 (BUTTON_PIN) as input
+  PORTB |= (1 << PB4); // Enable pull-up on PB4 (BUTTON_PIN)
 
   // Timer/Counter 2 setup for PWM on PD3 (OC2B)
   TCCR2A = (1 << WGM20) | (1 << WGM21);  // Fast PWM mode
   TCCR2B = (1 << CS22);                  // Prescaler 64
   TCCR2A |= (1 << COM2B1);               // Clear OC2B on compare match
-  
+
   Serial.println("Ready to move");
 }
 
@@ -51,7 +52,7 @@ void loop() {
   OCR2B = speed;
 
   // Read button state
-  if (digitalRead(BUTTON_PIN) == LOW) {  // Button pressed
+  if (!(PINB & (1 << PB4))) {  // Button pressed (digitalRead)
     delay(150);  // Debounce
     Direction = (Direction == FOWARD) ? BACKWARD : FOWARD;  // Toggle direction
     delay(100);  // Debounce
@@ -59,11 +60,11 @@ void loop() {
 
   // Set direction
   if (Direction == FOWARD) {
-    digitalWrite(DIR_F_PIN, HIGH);
-    digitalWrite(DIR_B_PIN, LOW);
+    PORTD |= (1 << PD7);  // Set PD7 (DIR_F_PIN) HIGH (digitalWrite)
+    PORTB &= ~(1 << PB0); // Set PB0 (DIR_B_PIN) LOW (digitalWrite)
   } else {
-    digitalWrite(DIR_F_PIN, LOW);
-    digitalWrite(DIR_B_PIN, HIGH);
+    PORTD &= ~(1 << PD7); // Set PD7 (DIR_F_PIN) LOW (digitalWrite)
+    PORTB |= (1 << PB0);  // Set PB0 (DIR_B_PIN) HIGH (digitalWrite)
   }
 
   Serial.print("Direction: ");
