@@ -1,11 +1,11 @@
 #include <Arduino.h>
 
 // 핀 정의
-#define pinTrig 2
-#define pinEcho 4
+#define pinTrig 8
+#define pinEcho 7
 #define DIN 13
-#define CS 11
-#define CLK 10
+#define CS 12
+#define CLK 11
 #define SPEAKER_PIN 8
 #define NUM_MATRICES 4
 #define NUMBER_OF_ROWS 8
