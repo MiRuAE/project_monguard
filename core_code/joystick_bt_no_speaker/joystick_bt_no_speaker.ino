@@ -11,10 +11,17 @@ SoftwareSerial mySerial(2, 4); // TX=2, RX=4 BLUETOOTH MODULE
 #define NUM_MATRICES 4
 #define NUMBER_OF_ROWS 8
 
+#define X_RIGHT "X:1023"
+#define X_LEFT "X:0"
+#define X_CENTER "X:504"
+
 #define BUTTON_A "A: Yes"
 #define BUTTON_B "B: Yes"
 #define BUTTON_C "C: Yes"
 #define BUTTON_D "D: Yes"
+
+// Buffer for incoming data
+String receivedData = "";
 
 // ">" 표현
 const uint8_t arrowRight[8] = {
@@ -148,46 +155,60 @@ void setup() {
 }
 
 void loop() {
-  // 블루투스에서 데이터 수신 시 처리
-  if (mySerial.available()) {
-    String receivedData = mySerial.readStringUntil('\n'); // 줄바꿈까지 문자열 읽기
-    Serial.println(receivedData); // 수신된 데이터를 출력
+   // 블루투스에서 데이터 수신 시 처리
+  while (mySerial.available()) {
+    char receivedChar = mySerial.read();
+    receivedData += receivedChar;
+    
+    // Check for end of line
+    if (receivedChar == '\n') {
+      Serial.print("Received: ");
+      Serial.println(receivedData);
 
-    
-    // X와 Y 값 추출
-    if (receivedData.startsWith("X:")) {
-      int xValue = receivedData.substring(2).toInt(); // Extract the number after "X:"
-      Serial.print("X Value: ");
-      Serial.println(xValue);
-      handleXValue(xValue);
-    }
-    if (receivedData.startsWith("Y:")) {
-      int yValue = receivedData.substring(2).toInt(); // Extract the number after "Y:"
-      Serial.print("Y Value: ");
-      Serial.println(yValue);
-    }
-    
-    // 버튼 상태에 따른 동작 수행
-    if (receivedData.indexOf(BUTTON_A) != -1) {
-//      Serial.println("Button A Pressed");
-      walkForward();
-    } else if (receivedData.indexOf(BUTTON_B) != -1) {
-//      Serial.println("Button B Pressed");
+      // X와 Y 값 추출
+      int xValue = -1, yValue = -1;
+      if (receivedData.indexOf("X:") != -1) {
+        int xStart = receivedData.indexOf("X:") + 2;
+        int xEnd = receivedData.indexOf(' ', xStart);
+        xValue = receivedData.substring(xStart, xEnd).toInt();
+      }
+      if (receivedData.indexOf("Y:") != -1) {
+        int yStart = receivedData.indexOf("Y:") + 2;
+        int yEnd = receivedData.indexOf(' ', yStart);
+        yValue = receivedData.substring(yStart, yEnd).toInt();
+      }
+
+      if (xValue != -1) {
+//        Serial.print("X Value: ");
+//        Serial.println(xValue);
+        handleXValue(xValue);
+      }
+      if (yValue != -1) {
+//        Serial.print("Y Value: ");
+//        Serial.println(yValue);
+      }
+      
+      // 버튼 상태에 따른 동작 수행
+      if (receivedData.indexOf(BUTTON_A) != -1) {
+        walkForward();
+      } else if (receivedData.indexOf(BUTTON_B) != -1) {
         int expression = random(2);
-        if(expression == 1) {
+        if (expression == 1) {
           displayCry();
         } else {
           displaySmile();
         }
         delay(1000);
         displayArrows();
-    } else if (receivedData.indexOf(BUTTON_C) != -1) {
-//      Serial.println("Button C Pressed");
-      walkBackward();
-    } else if (receivedData.indexOf(BUTTON_D) != -1) {
-//      Serial.println("Button D Pressed");
-//        playMelody();
-      // 필요한 동작 추가
+      } else if (receivedData.indexOf(BUTTON_C) != -1) {
+        walkBackward();
+      } else if (receivedData.indexOf(BUTTON_D) != -1) {
+        // 필요한 동작 추가
+          position_set();
+      }
+
+      // Clear the buffer for the next command
+      receivedData = "";
     }
   }
   
@@ -197,14 +218,16 @@ void loop() {
   }
 }
 
+
 void Righttilt(int xValue) {
-  int offset = (ANGLE_RANGE * (504 - xValue)) / 504; // Calculate based on xValue
+  int offset = (ANGLE_RANGE * (504 - xValue)) / 1000 * 15 ; // Calculate based on xValue
+  Serial.println(offset);
   OCR1A = NEUTRAL1 + offset;
   OCR1B = NEUTRAL2 + offset;
 }
 
 void Lefttilt(int xValue) {
-  int offset = (ANGLE_RANGE * (xValue - 504)) / 519; // Calculate based on xValue
+  int offset = (ANGLE_RANGE * (xValue - 504)) / 1000 * 15;// Calculate based on xValue
   OCR1A = NEUTRAL1 - offset;
   OCR1B = NEUTRAL2 - offset;
 }
@@ -220,20 +243,30 @@ void handleXValue(int xValue) {
   }
 }
 
+void position_set() {
+  OCR1A = NEUTRAL1;
+  OCR1B = NEUTRAL2;
+}
+
+
 void walkForward() {
   OCR1A = NEUTRAL1 + ANGLE_RANGE; // Move to max forward position
   OCR1B = NEUTRAL2 - ANGLE_RANGE;
+  /*
   delay(500); // Hold forward position for 500ms (adjust if needed)
   OCR1A = NEUTRAL1; // Return to neutral
   OCR1B = NEUTRAL2;
+  */
 }
 
 void walkBackward() {
   OCR1A = NEUTRAL1 - ANGLE_RANGE; // Move to max backward position
   OCR1B = NEUTRAL2 + ANGLE_RANGE;
+  /*
   delay(500); // Hold backward position for 500ms (adjust if needed)
   OCR1A = NEUTRAL1; // Return to neutral
   OCR1B = NEUTRAL2;
+  */
 }
 
 void displayArrows() {
