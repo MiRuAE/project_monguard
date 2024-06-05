@@ -17,22 +17,28 @@ void MotorControl::setSpeed(int motor, int speed) {
   }
 }
 
-void MotorControl::setDirection(int motor, bool forward) {
+void MotorControl::setDirection(int motor, char dir) {
   if (motor == 1) {
-    if (forward) {
+    if (dir == 'F') {
       PORTC |= (1 << motor1DirAPin);
       PORTC &= ~(1 << motor1DirBPin);
-    } else {
+    } else if (dir == 'B') {
       PORTC &= ~(1 << motor1DirAPin);
       PORTC |= (1 << motor1DirBPin);
+    } else if (dir == 'N') {
+      PORTC &= ~(1 << motor1DirAPin);
+      PORTC &= ~(1 << motor1DirBPin);
     }
   } else if (motor == 2) {
-    if (forward) {
+    if (dir == 'F') {
       PORTC |= (1 << motor2DirAPin);
       PORTC &= ~(1 << motor2DirBPin);
-    } else {
+    } else if (dir == 'B') {
       PORTC &= ~(1 << motor2DirAPin);
       PORTC |= (1 << motor2DirBPin);
+    } else if (dir == 'N') {
+      PORTC &= ~(1 << motor2DirAPin);
+      PORTC &= ~(1 << motor2DirBPin);
     }
   }
 }
