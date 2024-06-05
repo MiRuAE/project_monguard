@@ -5,6 +5,7 @@
 #define PORTD_BUTTON_B  0x08 // PIN3
 #define PORTD_BUTTON_C  0x10 // PIN4
 #define PORTD_BUTTON_D  0x20 // PIN5
+#define PORTB_BUTTON_E  0x01 // PIN8
 
 #define X_CHANNEL 0x00 // ADC0
 #define Y_CHANNEL 0x01 // ADC1
@@ -30,7 +31,7 @@ struct DataPacket {
   char dir;
   int V_Left;
   int V_Right;
-  char buttons[4];
+  char buttons[5]; // Increased to accommodate Button E
 };
 
 void setup() {
@@ -38,9 +39,11 @@ void setup() {
   mySerial.begin(9600);
   init_ADC();
 
-  // Set pins 2, 3, 4, 5 as inputs with internal pull-ups
+  // Set pins 2, 3, 4, 5, 8 as inputs with internal pull-ups
   DDRD &= ~(PORTD_BUTTON_A | PORTD_BUTTON_B | PORTD_BUTTON_C | PORTD_BUTTON_D);
   PORTD |= (PORTD_BUTTON_A | PORTD_BUTTON_B | PORTD_BUTTON_C | PORTD_BUTTON_D);
+  DDRB &= ~PORTB_BUTTON_E;
+  PORTB |= PORTB_BUTTON_E;
 
   Serial.println("Enter AT commands:");
 }
@@ -75,8 +78,8 @@ void loop() {
   V_Left = constrain(V_Left, 0, 255);
   V_Right = constrain(V_Right, 0, 255);
 
-  // Read button states using PIND register and format into a single byte
-  char buttons[4] = {'0', '0', '0', '0'};
+  // Read button states using PIND and PINB registers and format into a single byte
+  char buttons[5] = {'0', '0', '0', '0', '0'}; // Increased to accommodate Button E
   if (!(PIND & PORTD_BUTTON_A)) {
     buttons[0] = 'A';
   }
@@ -89,6 +92,9 @@ void loop() {
   if (!(PIND & PORTD_BUTTON_D)) {
     buttons[3] = 'D';
   }
+  if (!(PINB & PORTB_BUTTON_E)) {
+    buttons[4] = 'E';
+  }
 
   // Send data packet: [dir, V_Left, V_Right, buttonState]
   DataPacket dataPacket;
@@ -99,6 +105,7 @@ void loop() {
   dataPacket.buttons[1] = buttons[1];
   dataPacket.buttons[2] = buttons[2];
   dataPacket.buttons[3] = buttons[3];
+  dataPacket.buttons[4] = buttons[4];
 
   mySerial.write((uint8_t *)&dataPacket, sizeof(dataPacket));
 
