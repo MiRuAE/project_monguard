@@ -3,11 +3,11 @@
 // Pin definitions
 #define MOTOR1_DIR_A_PIN 0x00  // MOTOR1 Direction pin A (Offset for PORTC)
 #define MOTOR1_DIR_B_PIN 0x01  // MOTOR1 Direction pin B (Offset for PORTC)
-#define MOTOR1_ENABLE_PIN 0x02 // MOTOR1 Enable pin (Offset for PORTB)
+#define MOTOR1_ENABLE_PIN 0x40 // MOTOR1 Enable pin (Offset for PORTD)
 
 #define MOTOR2_DIR_A_PIN 0x02  // MOTOR2 Direction pin A (Offset for PORTC)
 #define MOTOR2_DIR_B_PIN 0x03  // MOTOR2 Direction pin B (Offset for PORTC)
-#define MOTOR2_ENABLE_PIN 0x01 // MOTOR2 Enable pin (Offset for PORTB)
+#define MOTOR2_ENABLE_PIN 0x20 // MOTOR2 Enable pin (Offset for PORTD)
 
 #define POT_PIN 0x05            // Potentiometer input (Analog PIN A5)
 
@@ -32,7 +32,7 @@ void setup() {
 
   // Configure pins
   DDRC |= (1 << MOTOR1_DIR_A_PIN) | (1 << MOTOR1_DIR_B_PIN) | (1 << MOTOR2_DIR_A_PIN) | (1 << MOTOR2_DIR_B_PIN); // Set direction pins as outputs
-  DDRB |= (1 << MOTOR1_ENABLE_PIN) | (1 << MOTOR2_ENABLE_PIN);                                                    // Set enable pins as outputs
+  DDRD |= (1 << MOTOR1_ENABLE_PIN) | (1 << MOTOR2_ENABLE_PIN);                                                    // Set enable pins as outputs
 
   // Timer setup for PWM on pins 9 and 10 (adjust as needed for desired PWM frequency)
   TCCR1A = (1 << COM1A1) | (1 << COM1B1) | (1 << WGM10); // Fast PWM, 8-bit
@@ -55,7 +55,9 @@ void loop() {
     PORTC |= (1 << MOTOR1_DIR_B_PIN);
   }
   // Motor 1 speed
-  OCR1B = speed;
+  //OCR1B = speed;
+  int speed1 = 200;
+  OCR1B = speed1;
 
   // Motor 2 direction
   if (forward) {
@@ -66,7 +68,8 @@ void loop() {
     PORTC |= (1 << MOTOR2_DIR_B_PIN);
   }
   // Motor 2 speed
-  OCR1A = speed;
+  //OCR1A = speed;
+  OCR1A = speed1;
 
   Serial.print("Potentiometer: ");
   Serial.print(pot_value);
