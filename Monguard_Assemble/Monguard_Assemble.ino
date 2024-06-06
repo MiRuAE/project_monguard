@@ -2,15 +2,16 @@
 <<<<<<< HEAD
 #include "MotorControl.h" // MotorControl 라이브러리 추가
 #include "faceControl.h"
-
+/*
 #define NEUTRAL1 3925 // Calibrated neutral value for servo 1 (Left) (green, blue, orange) (in microseconds)
 #define NEUTRAL2 2375 // Calibrated neutral value for servo 2 (Right) (black, red, orange) (in microseconds)
 #define ANGLE_RANGE 300// Maximum deviation from neutral
-=======
+*/
+//=======
 #include "MotorControl.h"
 #include "BluetoothControl.h"
 #include "faceControl.h"
->>>>>>> 469c445ca884ca7cf1e5c0664834c3b258adb4aa
+//>>>>>>> 469c445ca884ca7cf1e5c0664834c3b258adb4aa
 
 #define RX_PIN 12
 #define TX_PIN 13
@@ -57,7 +58,7 @@ void setup() {
   motorControl.init(); // 모터 제어 라이브러리 초기화
 
   face.setFace("squint");
-=======
+//=======
 // BluetoothControl 객체 생성
 BluetoothControl bluetoothControl(RX_PIN, TX_PIN);
 // MotorControl 객체 생성
