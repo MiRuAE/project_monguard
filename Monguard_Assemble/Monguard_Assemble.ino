@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "MotorControl.h"
 #include "BluetoothControl.h"
+#include "faceControl.h"
 
 #define RX_PIN 12
 #define TX_PIN 13
@@ -13,9 +14,9 @@ MotorControl motorControl;
 void setup() {
   Serial.begin(9600);
   bluetoothControl.begin(9600);
-
   Serial.println("Bluetooth communication initialized.");
-
+  initMatrices();
+  Serial.println("Matrix initialized");
   motorControl.init(); // 모터 제어 라이브러리 초기화
 }
 
@@ -50,6 +51,18 @@ void loop() {
     Serial.print(buttonD);
     Serial.print(buttonE);
     Serial.println();
+
+    // 얼굴 표정 부분
+    setFace(normalEyes, flatMouth);    // ㅡ.ㅡ
+    delay(2000);
+    setFace(squintEyes, openMouth);    // >..<
+    delay(2000);
+    setFace(normalEyes, smileMouth); // ^__^
+    delay(2000);
+    setFace(surprisedEyes, openMouth); // O_O
+    delay(2000);
+    winkFace();  // 윙크 표정
+    delay(2000);
 
     // 모터 제어 함수 호출
     motorControl.setSpeed(1, V_Left); // 좌측 모터 속도 설정
