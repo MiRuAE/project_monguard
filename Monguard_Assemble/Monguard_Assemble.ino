@@ -1,37 +1,34 @@
-#include <SoftwareSerial.h>
 #include <Arduino.h>
-#include "MotorControl.h" // MotorControl 라이브러리 추가
+#include "MotorControl.h"
+#include "BluetoothControl.h"
+#include "faceControl.h"
 
 #define RX_PIN 12
 #define TX_PIN 13
 
-SoftwareSerial bluetoothSerial(RX_PIN, TX_PIN); // RX=12, TX=13 BLUETOOTH MODULE
-
-struct DataPacket {
-  char dir;
-  int V_Left;
-  int V_Right;
-  char buttons[5]; // Increased to accommodate Button E
-};
-
-MotorControl motorControl; // MotorControl 객체 생성
+// BluetoothControl 객체 생성
+BluetoothControl bluetoothControl(RX_PIN, TX_PIN);
+// MotorControl 객체 생성
+MotorControl motorControl;
 
 void setup() {
   Serial.begin(9600);
-  bluetoothSerial.begin(9600);
-
+  bluetoothControl.begin(9600);
   Serial.println("Bluetooth communication initialized.");
-
+  initMatrices();
+  Serial.println("Matrix initialized");
   motorControl.init(); // 모터 제어 라이브러리 초기화
+  randomSeed(analogRead(0)); // 랜덤 시드 초기화
 }
 
 void loop() {
-  if (bluetoothSerial.available() >= sizeof(DataPacket)) { // Wait until a complete data packet is available
-    // Read the data packet
-    DataPacket receivedPacket;
-    bluetoothSerial.readBytes((char *)&receivedPacket, sizeof(DataPacket));
+  DataPacket receivedPacket; // 데이터를 받을 패킷 구조체 생성
 
-    // Parse the data packet
+  // 블루투스로부터 데이터를 읽음
+  if (bluetoothControl.readData(receivedPacket)) {
+    // 데이터를 성공적으로 읽었을 때만 아래 코드 실행
+
+    // 데이터 패킷에서 정보 추출
     char dir = receivedPacket.dir;
     int V_Left = receivedPacket.V_Left;
     int V_Right = receivedPacket.V_Right;
@@ -41,7 +38,7 @@ void loop() {
     char buttonD = receivedPacket.buttons[3];
     char buttonE = receivedPacket.buttons[4];
 
-    // Print the received data
+    // 읽은 데이터 출력
     Serial.print("Received Dir: ");
     Serial.print(dir);
     Serial.print(" V_Left: ");
@@ -55,6 +52,28 @@ void loop() {
     Serial.print(buttonD);
     Serial.print(buttonE);
     Serial.println();
+
+    // 버튼 B가 눌렸을 때 얼굴 표정을 랜덤으로 변경
+    if (buttonB == 'B') { // 버튼 B가 눌린 상태
+      int randomFace = random(5); // 0부터 4까지 랜덤 숫자 생성 (표정 5개)
+      switch (randomFace) {
+        case 0:
+          setFace(normalEyes, flatMouth); // ㅡ.ㅡ
+          break;
+        case 1:
+          setFace(squintEyes, openMouth); // >..<
+          break;
+        case 2:
+          setFace(normalEyes, smileMouth); // ^__^
+          break;
+        case 3:
+          setFace(surprisedEyes, openMouth); // O_O
+          break;
+        case 4:
+          winkFace(); // 윙크 표정
+          break;
+      }
+    }
 
     // 모터 제어 함수 호출
     motorControl.setSpeed(1, V_Left); // 좌측 모터 속도 설정
