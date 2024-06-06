@@ -1,22 +1,13 @@
 #include <SoftwareSerial.h>
 #include <Arduino.h>
 #include "MotorControl.h" // MotorControl 라이브러리 추가
-#include "faceControl.h"
-
-#define NEUTRAL1 3925 // Calibrated neutral value for servo 1 (Left) (green, blue, orange) (in microseconds)
-#define NEUTRAL2 2375 // Calibrated neutral value for servo 2 (Right) (black, red, orange) (in microseconds)
-#define ANGLE_RANGE 300// Maximum deviation from neutral
+#include "MyServoControl.h" // MyServoControl 라이브러리 추가
 
 #define RX_PIN 12
 #define TX_PIN 13
-#define DIN 2
-#define CS 3
-#define CLK 4
-#define NUM_MATRICES 4
-#define NUMBER_OF_ROWS 8
+#define JOYSTICK_X_PIN A0 // 조이스틱 X값을 읽을 아날로그 핀
 
 SoftwareSerial bluetoothSerial(RX_PIN, TX_PIN); // RX=12, TX=13 BLUETOOTH MODULE
-faceControl face(DIN, CS, CLK, NUM_MATRICES);
 
 struct DataPacket {
   char dir;
@@ -26,31 +17,16 @@ struct DataPacket {
 };
 
 MotorControl motorControl; // MotorControl 객체 생성
+MyServoControl myServo; // MyServoControl 객체 생성
 
 void setup() {
   Serial.begin(9600);
   bluetoothSerial.begin(9600);
 
-  // Configure Timer/Counter1 for Fast PWM mode
-  cli(); // Disable global interrupts
-  DDRB |= (1 << PB1) | (1 << PB2); // Set OC1A (PB1) and OC1B (PB2) as output
-
-  // Configure Timer/Counter1
-  TCCR1A = (1 << WGM11) | (1 << COM1A1) | (1 << COM1B1); // Fast PWM, 10-bit
-  TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS11); // Fast PWM, Prescaler 8
-
-  ICR1 = 40000; // Top value for 50Hz PWM (20ms period)
-
-  sei(); // Enable global interrupts
-
-  position_set();
-  
   Serial.println("Bluetooth communication initialized.");
 
-  face.begin();
   motorControl.init(); // 모터 제어 라이브러리 초기화
-
-  face.setFace("squint");
+  myServo.begin(); // 서보 제어 라이브러리 초기화
 }
 
 void loop() {
@@ -90,29 +66,20 @@ void loop() {
     motorControl.setDirection(1, dir); // 좌측 모터 방향 설정
     motorControl.setDirection(2, dir); // 우측 모터 방향 설정
 
+    // 버튼 A를 누르면 walkForward 실행
     if (buttonA == 'A') {
-      Serial.println("Button A Pressed");
-      walkForward();
+      myServo.walkForward();
     }
 
+    // 버튼 C를 누르면 walkBackward 실행
     if (buttonC == 'C') {
-      Serial.println("Button C Pressed");
-      walkBackward();
+      myServo.walkBackward();
     }
+
+    // 조이스틱의 X값으로 좌우 틸팅
+//    int xValue = analogRead(JOYSTICK_X_PIN);
+//    myServo.handleXValue(xValue);
   }
-}
 
-void position_set() {
-  OCR1A = NEUTRAL1;
-  OCR1B = NEUTRAL2;
-}
-
-void walkForward() {
-  OCR1A = NEUTRAL1 + ANGLE_RANGE; // Move to max forward position
-  OCR1B = NEUTRAL2 - ANGLE_RANGE;
-}
-
-void walkBackward() {
-  OCR1A = NEUTRAL1 - ANGLE_RANGE; // Move to max backward position
-  OCR1B = NEUTRAL2 + ANGLE_RANGE;
+  delay(100); // Adjust delay as needed
 }

@@ -1,15 +1,17 @@
 #include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(2, 4); // TX=2, RX=4 BLUETOOTH MODULE
+SoftwareSerial mySerial(12, 13); // TX=2, RX=4 BLUETOOTH MODULE
 
-#define NEUTRAL1 2750 // Calibrated neutral value for servo 1 (Left) (in microseconds)
-#define NEUTRAL2 3450 // Calibrated neutral value for servo 2 (Right) (in microseconds)
+#define NEUTRAL1 3925 // Calibrated neutral value for servo 1 (Left) (in microseconds)
+#define NEUTRAL2 2375 // Calibrated neutral value for servo 2 (Right) (in microseconds)
 #define ANGLE_RANGE  300 // Maximum deviation from neutral
-#define DIN 13
-#define CS 12
-#define CLK 11
+#define DIN 2
+#define CS 3
+#define CLK 4
 #define NUM_MATRICES 4
 #define NUMBER_OF_ROWS 8
+#define pinTrig 7
+#define pinEcho 8
 
 #define X_RIGHT "X:1023"
 #define X_LEFT "X:0"
@@ -19,6 +21,8 @@ SoftwareSerial mySerial(2, 4); // TX=2, RX=4 BLUETOOTH MODULE
 #define BUTTON_B "B: Yes"
 #define BUTTON_C "C: Yes"
 #define BUTTON_D "D: Yes"
+
+volatile bool triggerInterrupt = false;
 
 // Buffer for incoming data
 String receivedData = "";
@@ -115,6 +119,17 @@ const uint8_t center2[8] = {
   0b00000000,
 };
 
+const uint8_t cross[8] = {
+  0b10000001,
+  0b01000010,
+  0b00100100,
+  0b00011000,
+  0b00011000,
+  0b00100100,
+  0b01000010,
+  0b10000001
+};
+
 void setup() {
   Serial.begin(9600);       // 시리얼 통신 시작, 전송 속도 9600
   mySerial.begin(9600);    // 블루투스 시리얼 통신 시작, 전송 속도 9600
@@ -155,6 +170,22 @@ void setup() {
 }
 
 void loop() {
+  double distance = measureDistanceCm();
+
+  if (distance <= 10.0) {
+    if(!triggerInterrupt){
+      triggerInterrupt = true;
+      OCR1A = NEUTRAL1;
+      OCR1B = NEUTRAL2;
+      displayCross();
+    }
+  } else{
+    if(triggerInterrupt) {
+      triggerInterrupt = false;
+      displayArrows();
+    }
+  }
+  
    // 블루투스에서 데이터 수신 시 처리
   while (mySerial.available()) {
     char receivedChar = mySerial.read();
@@ -218,7 +249,7 @@ void loop() {
   }
 }
 
-
+//Servo Control
 void Righttilt(int xValue) {
   int offset = (ANGLE_RANGE * (504 - xValue)) / 1000 * 15 ; // Calculate based on xValue
   Serial.println(offset);
@@ -248,27 +279,17 @@ void position_set() {
   OCR1B = NEUTRAL2;
 }
 
-
 void walkForward() {
   OCR1A = NEUTRAL1 + ANGLE_RANGE; // Move to max forward position
   OCR1B = NEUTRAL2 - ANGLE_RANGE;
-  /*
-  delay(500); // Hold forward position for 500ms (adjust if needed)
-  OCR1A = NEUTRAL1; // Return to neutral
-  OCR1B = NEUTRAL2;
-  */
 }
 
 void walkBackward() {
   OCR1A = NEUTRAL1 - ANGLE_RANGE; // Move to max backward position
   OCR1B = NEUTRAL2 + ANGLE_RANGE;
-  /*
-  delay(500); // Hold backward position for 500ms (adjust if needed)
-  OCR1A = NEUTRAL1; // Return to neutral
-  OCR1B = NEUTRAL2;
-  */
 }
 
+//Led Control Expressions
 void displayArrows() {
   for (uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
     write_Max7219(0, row + 1, arrowRight[row]); // First Matrix
@@ -296,6 +317,15 @@ void displayCry() {
   }
 }
 
+void displayCross() {
+  for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
+    write_Max7219(0, row + 1, cross[row]);
+    write_Max7219(1, row + 1, center1[row]);
+    write_Max7219(2, row + 1, center2[row]);
+    write_Max7219(3, row + 1, cross[row]);
+  }
+}
+
 void write_Max7219(uint8_t matrix, uint8_t address, uint8_t data) {
   digitalWrite(CS, LOW);
   for (uint8_t i = 0; i < NUM_MATRICES; i++) {
@@ -317,4 +347,17 @@ void write_byte(uint8_t data) {
     digitalWrite(CLK, HIGH);
     digitalWrite(CLK, LOW);
   }
+}
+
+//UltraSound Sensor
+double measureDistanceCm() {
+  digitalWrite(pinTrig, LOW);
+  delayMicroseconds(5);
+  digitalWrite(pinTrig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(pinTrig, LOW);
+
+  double duration = pulseIn(pinEcho, HIGH);
+  double cm = (duration / 2) * 0.0343;
+  return cm;
 }
