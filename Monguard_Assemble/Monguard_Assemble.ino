@@ -2,10 +2,8 @@
 #include "MotorControl.h"
 #include "BluetoothControl.h"
 #include "faceControl.h"
-
-#define NEUTRAL1 3925 // Calibrated neutral value for servo 1 (Left) (green, blue, orange) (in microseconds)
-#define NEUTRAL2 2375 // Calibrated neutral value for servo 2 (Right) (black, red, orange) (in microseconds)
-#define ANGLE_RANGE 300 // Maximum deviation from neutral
+#include "MyServoControl.h"
+#include "MyMusic.h"
 
 #define RX_PIN 12
 #define TX_PIN 13
@@ -18,30 +16,19 @@
 BluetoothControl bluetoothControl(RX_PIN, TX_PIN); // BluetoothControl 객체 생성
 MotorControl motorControl; // MotorControl 객체 생성
 faceControl face(DIN, CS, CLK, NUM_MATRICES); // faceControl 객체 생성
+MyServoControl myServo;
 
 void setup() {
   Serial.begin(9600);
   bluetoothControl.begin(9600);
-
-  // Configure Timer/Counter1 for Fast PWM mode
-  cli(); // Disable global interrupts
-  DDRB |= (1 << PB1) | (1 << PB2); // Set OC1A (PB1) and OC1B (PB2) as output
-
-  // Configure Timer/Counter1
-  TCCR1A = (1 << WGM11) | (1 << COM1A1) | (1 << COM1B1); // Fast PWM, 10-bit
-  TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS11); // Fast PWM, Prescaler 8
-
-  ICR1 = 40000; // Top value for 50Hz PWM (20ms period)
-
-  sei(); // Enable global interrupts
-
-  position_set();
   
   Serial.println("Bluetooth communication initialized.");
   face.begin();
   motorControl.init(); // 모터 제어 라이브러리 초기화
+  myServo.begin();
 
   face.setFace("squint");
+  myServo.positionSet();
 }
 
 void loop() {
@@ -62,7 +49,7 @@ void loop() {
     char buttonE = receivedPacket.buttons[4];
 
     // 읽은 데이터 출력
-    Serial.print("Received Dir: ");
+    //Serial.print("Received Dir: ");
     Serial.print(dir);
     Serial.print(" V_Left: ");
     Serial.print(V_Left);
@@ -75,10 +62,10 @@ void loop() {
     Serial.print(buttonD);
     Serial.print(buttonE);
     Serial.println();
-
+    
     // 버튼 B가 눌렸을 때 얼굴 표정을 랜덤으로 변경
     if (buttonB == 'B') { // 버튼 B가 눌린 상태
-      int randomFace = random(5); // 0부터 4까지 랜덤 숫자 생성 (표정 5개)
+      int randomFace = random(6); // 0부터 4까지 랜덤 숫자 생성 (표정 5개)
       switch (randomFace) {
         case 0:
           face.setFace("normal");
@@ -95,6 +82,9 @@ void loop() {
         case 4:
           face.setFace("wink");
           break;
+        case 5:
+          face.setFace("angry");
+          break;
       }
     }
 
@@ -105,28 +95,15 @@ void loop() {
     motorControl.setDirection(2, dir); // 우측 모터 방향 설정
 
     if (buttonA == 'A') {
-      Serial.println("Button A Pressed");
-      walkForward();
+      myServo.walkForward();
+    }
+    
+    if (buttonC == 'C') {
+      myServo.walkBackward();
     }
 
-    if (buttonC == 'C') {
-      Serial.println("Button C Pressed");
-      walkBackward();
+    if (buttonD == 'D') {
+      myServo.positionSet();
     }
   }
-}
-
-void position_set() {
-  OCR1A = NEUTRAL1;
-  OCR1B = NEUTRAL2;
-}
-
-void walkForward() {
-  OCR1A = NEUTRAL1 + ANGLE_RANGE; // Move to max forward position
-  OCR1B = NEUTRAL2 - ANGLE_RANGE;
-}
-
-void walkBackward() {
-  OCR1A = NEUTRAL1 - ANGLE_RANGE; // Move to max backward position
-  OCR1B = NEUTRAL2 + ANGLE_RANGE;
 }
