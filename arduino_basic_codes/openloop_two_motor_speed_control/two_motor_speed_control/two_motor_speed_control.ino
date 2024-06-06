@@ -19,14 +19,14 @@ BLDCDriver3PWM driver1 = BLDCDriver3PWM(3, 5, 6, 7);
 const int potPin = A1;  // INPUT pot control for speed or position
 
 //target variable
-float target_velocity = 10;
+// float target_velocity = 10;
 
-// instantiate the commander
-Commander command = Commander(Serial);
-void doTarget0(char* cmd) { command.scalar(&target_velocity, cmd); }
-void doLimit0(char* cmd) { command.scalar(&motor0.voltage_limit, cmd); }
-void doTarget1(char* cmd) { command.scalar(&target_velocity, cmd); }
-void doLimit1(char* cmd) { command.scalar(&motor1.voltage_limit, cmd); }
+// // instantiate the commander
+// Commander command = Commander(Serial);
+// void doTarget0(char* cmd) { command.scalar(&target_velocity, cmd); }
+// void doLimit0(char* cmd) { command.scalar(&motor0.voltage_limit, cmd); }
+// void doTarget1(char* cmd) { command.scalar(&target_velocity, cmd); }
+// void doLimit1(char* cmd) { command.scalar(&motor1.voltage_limit, cmd); }
 
 void setup() {
 
@@ -37,9 +37,9 @@ void setup() {
   // limit the maximal dc voltage the driver can set
   // as a protection measure for the low-resistance motors
   // this value is fixed on startup
-  driver0.voltage_limit = 6;
+  driver0.voltage_limit = 12;
   driver0.init();
-  driver1.voltage_limit = 6;
+  driver1.voltage_limit = 12;
   driver1.init();
   // link the motor and the driver
   motor0.linkDriver(&driver0);
@@ -49,8 +49,8 @@ void setup() {
   // limit the voltage to be set to the motor
   // start very low for high resistance motors
   // current = voltage / resistance, so try to be well under 1Amp
-  motor0.voltage_limit = 3;   // [V]
-  motor1.voltage_limit = 3;   // [V]
+  motor0.voltage_limit = 6;   // [V]
+  motor1.voltage_limit = 6;   // [V]
  
   // open loop control config
   motor0.controller = MotionControlType::velocity_openloop;
@@ -61,12 +61,12 @@ void setup() {
   motor1.init();
 
   // add target command T
-  command.add('T', doTarget0, "target velocity");
-  command.add('L', doLimit0, "voltage limit");
+  // command.add('T', doTarget0, "target velocity");
+  // command.add('L', doLimit0, "voltage limit");
 
-  Serial.begin(115200);
-  Serial.println("Motor ready!");
-  Serial.println("Set target velocity [rad/s]");
+  // Serial.begin(115200);
+  // Serial.println("Motor ready!");
+  // Serial.println("Set target velocity [rad/s]");
 
   pinMode(potPin, INPUT);
   
@@ -99,5 +99,5 @@ void loop() {
  Serial.println(speed);
 
   // user communication
-  command.run();
+  //command.run();
 }

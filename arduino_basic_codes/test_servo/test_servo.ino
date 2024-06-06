@@ -1,7 +1,8 @@
-#define NEUTRAL1 3150 // Calibrated neutral value for servo 1 (black, white, white) (in microseconds)
-#define NEUTRAL2 3050 // Calibrated neutral value for servo 2 (green, blue, purtple) (in microseconds)
+#define NEUTRAL1 3925 // Calibrated neutral value for servo 1 (Left) (green, blue, orange) (in microseconds)
+#define NEUTRAL2 2375 // Calibrated neutral value for servo 2 (Right) (black, red, orange) (in microseconds)
+//1980 front leg servo high
 
-#define ANGLE_RANGE 600 // Maximum deviation from neutral
+#define ANGLE_RANGE 300// Maximum deviation from neutral
 
 void setup() {
   Serial.begin(9600);
@@ -24,24 +25,24 @@ void setup() {
 }
 
 void loop() {
-  walkForward();
-  delay(2000);
+//  walkForward();
+  
   walkBackward();
-  delay(2000);
+//  delay(2000);
+//  position_set();
+}
+
+void position_set() {
+  OCR1A = NEUTRAL1;
+  OCR1B = NEUTRAL2;
 }
 
 void walkForward() {
   OCR1A = NEUTRAL1 + ANGLE_RANGE; // Move to max forward position
   OCR1B = NEUTRAL2 - ANGLE_RANGE;
-  delay(500); // Hold forward position for 500ms (adjust if needed)
-  OCR1A = NEUTRAL1; // Return to neutral
-  OCR1B = NEUTRAL2;
 }
 
 void walkBackward() {
   OCR1A = NEUTRAL1 - ANGLE_RANGE; // Move to max backward position
   OCR1B = NEUTRAL2 + ANGLE_RANGE;
-  delay(500); // Hold backward position for 500ms (adjust if needed)
-  OCR1A = NEUTRAL1; // Return to neutral
-  OCR1B = NEUTRAL2;
 }

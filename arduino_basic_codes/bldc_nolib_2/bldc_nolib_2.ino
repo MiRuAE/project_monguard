@@ -3,7 +3,7 @@ const int motorPin1 = 9;
 const int motorPin2 = 10;
 const int motorPin3 = 11;
 
-const int steps = 327;
+const int steps = 49;
 int pwmSin[steps];
 
 int currentStepA = 0;
@@ -64,10 +64,11 @@ void move() {
   //delay(5); 
 
   //This will give you open loop speed control with the potentiometer
-  delay(sensorValue/10);
+  //delay(sensorValue/10);
+  //delay(10);
 
   //This will give you open loop position control with the potentiometer
-  //currentStepA = sensorValue/5; //divide by a number to affect the ratio of pot position : motor position
+  currentStepA = sensorValue/5; //divide by a number to affect the ratio of pot position : motor position
 
 
 

@@ -47,8 +47,8 @@ void setup() {
   // Initialize BLDC drivers
   driver0.voltage_power_supply = 12;
   driver1.voltage_power_supply = 12;
-  driver0.voltage_limit = 6;
-  driver1.voltage_limit = 6;
+  driver0.voltage_limit = 11;
+  driver1.voltage_limit = 11;
   driver0.init();
   driver1.init();
 
@@ -57,8 +57,8 @@ void setup() {
   motor1.linkDriver(&driver1);
 
   // Configure motors
-  motor0.voltage_limit = 3;
-  motor1.voltage_limit = 3;
+  motor0.voltage_limit = 6;
+  motor1.voltage_limit = 6;
   motor0.controller = MotionControlType::velocity_openloop;
   motor1.controller = MotionControlType::velocity_openloop;
   motor0.init();
