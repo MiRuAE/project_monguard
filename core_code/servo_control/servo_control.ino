@@ -1,85 +1,85 @@
-#include <SoftwareSerial.h>
-#include <Arduino.h>
-#include "MotorControl.h" // MotorControl 라이브러리 추가
-#include "MyServoControl.h" // MyServoControl 라이브러리 추가
+#include "MyServoControl.h"
 
-#define RX_PIN 12
-#define TX_PIN 13
-#define JOYSTICK_X_PIN A0 // 조이스틱 X값을 읽을 아날로그 핀
-
-SoftwareSerial bluetoothSerial(RX_PIN, TX_PIN); // RX=12, TX=13 BLUETOOTH MODULE
-
-struct DataPacket {
-  char dir;
-  int V_Left;
-  int V_Right;
-  char buttons[5]; // Increased to accommodate Button E
-};
-
-MotorControl motorControl; // MotorControl 객체 생성
-MyServoControl myServo; // MyServoControl 객체 생성
+// MyServoControl 객체 생성
+MyServoControl myServo;
 
 void setup() {
+  // 시리얼 통신 초기화 (디버깅용)
   Serial.begin(9600);
-  bluetoothSerial.begin(9600);
 
-  Serial.println("Bluetooth communication initialized.");
+  // 서보 모터 초기화
+  myServo.begin();
+  Serial.println("Servo initialized");
 
-  motorControl.init(); // 모터 제어 라이브러리 초기화
-  myServo.begin(); // 서보 제어 라이브러리 초기화
+  // 서보 모터 중립 위치로 설정
+  myServo.positionSet();
+  Serial.println("Servo set to neutral position");
+  delay(2000); // 2초 대기
 }
 
 void loop() {
-  if (bluetoothSerial.available() >= sizeof(DataPacket)) { // Wait until a complete data packet is available
-    // Read the data packet
-    DataPacket receivedPacket;
-    bluetoothSerial.readBytes((char *)&receivedPacket, sizeof(DataPacket));
+  // 전진 테스트
+  myServo.walkForward();
+  Serial.println("Servo moving forward");
+  delay(2000); // 2초 대기
 
-    // Parse the data packet
-    char dir = receivedPacket.dir;
-    int V_Left = receivedPacket.V_Left;
-    int V_Right = receivedPacket.V_Right;
-    char buttonA = receivedPacket.buttons[0];
-    char buttonB = receivedPacket.buttons[1];
-    char buttonC = receivedPacket.buttons[2];
-    char buttonD = receivedPacket.buttons[3];
-    char buttonE = receivedPacket.buttons[4];
+  // 중립 위치로 복귀
+  myServo.positionSet();
+  Serial.println("Servo set to neutral position");
+  delay(2000); // 2초 대기
 
-    // Print the received data
-//    Serial.print("Received Dir: ");
-//    Serial.print(dir);
-    Serial.print(" V_Left: ");
-    Serial.print(V_Left);
-    Serial.print(" V_Right: ");
-    Serial.print(V_Right);
-    Serial.print(" Buttons: ");
-    Serial.print(buttonA);
-    Serial.print(buttonB);
-    Serial.print(buttonC);
-    Serial.print(buttonD);
-    Serial.print(buttonE);
-    Serial.println();
+  // 후진 테스트
+  myServo.walkBackward();
+  Serial.println("Servo moving backward");
+  delay(2000); // 2초 대기
 
-    // 모터 제어 함수 호출
-    motorControl.setSpeed(1, V_Left); // 좌측 모터 속도 설정
-    motorControl.setSpeed(2, V_Right); // 우측 모터 속도 설정
-    motorControl.setDirection(1, dir); // 좌측 모터 방향 설정
-    motorControl.setDirection(2, dir); // 우측 모터 방향 설정
+  // 중립 위치로 복귀
+  myServo.positionSet();
+  Serial.println("Servo set to neutral position");
+  delay(2000); // 2초 대기
 
-    // 버튼 A를 누르면 walkForward 실행
-    if (buttonA == 'A') {
-      myServo.walkForward();
-    }
+  // 각도 증가 테스트
+  myServo.increaseAngle(100);
+  Serial.println("Servo angle increased by 100");
+  delay(2000); // 2초 대기
 
-    // 버튼 C를 누르면 walkBackward 실행
-    if (buttonC == 'C') {
-      myServo.walkBackward();
-    }
+  // 각도 감소 테스트
+  myServo.decreaseAngle(100);
+  Serial.println("Servo angle decreased by 100");
+  delay(2000); // 2초 대기
 
-    // 조이스틱의 X값으로 좌우 틸팅
-//    int xValue = analogRead(JOYSTICK_X_PIN);
-//    myServo.handleXValue(xValue);
-  }
+  // 중립 위치로 복귀
+  myServo.positionSet();
+  Serial.println("Servo set to neutral position");
+  delay(2000); // 2초 대기
 
-  delay(100); // Adjust delay as needed
+  // 왼쪽 기울기 테스트
+  myServo.tiltLeft(100);
+  Serial.println("Servo tilted left by 100");
+  delay(2000); // 2초 대기
+
+  // 중립 위치로 복귀
+  myServo.positionSet();
+  Serial.println("Servo set to neutral position");
+  delay(2000); // 2초 대기
+
+  // 오른쪽 기울기 테스트
+  myServo.tiltRight(100);
+  Serial.println("Servo tilted right by 100");
+  delay(2000); // 2초 대기
+
+  // 중립 위치로 복귀
+  myServo.positionSet();
+  Serial.println("Servo set to neutral position");
+  delay(2000); // 2초 대기
+
+  // 상향/하향 기울기 테스트
+  myServo.upDownTilt(200);
+  Serial.println("Servo up/down tilted by 200");
+  delay(2000); // 2초 대기
+
+  // 중립 위치로 복귀
+  myServo.positionSet();
+  Serial.println("Servo set to neutral position");
+  delay(2000); // 2초 대기
 }

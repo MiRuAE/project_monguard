@@ -2,20 +2,10 @@
 #include "MotorControl.h"
 #include "BluetoothControl.h"
 #include "faceControl.h"
-/*
+
 #define NEUTRAL1 3925 // Calibrated neutral value for servo 1 (Left) (green, blue, orange) (in microseconds)
 #define NEUTRAL2 2375 // Calibrated neutral value for servo 2 (Right) (black, red, orange) (in microseconds)
-<<<<<<< HEAD
-#define ANGLE_RANGE 300// Maximum deviation from neutral
-*/
-//=======
-#include "MotorControl.h"
-#include "BluetoothControl.h"
-#include "faceControl.h"
-//>>>>>>> 469c445ca884ca7cf1e5c0664834c3b258adb4aa
-=======
 #define ANGLE_RANGE 300 // Maximum deviation from neutral
->>>>>>> cd879afc0c03ae7f5d50ab9c7a3f15c921545232
 
 #define RX_PIN 12
 #define TX_PIN 13
@@ -52,24 +42,6 @@ void setup() {
   motorControl.init(); // 모터 제어 라이브러리 초기화
 
   face.setFace("squint");
-<<<<<<< HEAD
-//=======
-// BluetoothControl 객체 생성
-BluetoothControl bluetoothControl(RX_PIN, TX_PIN);
-// MotorControl 객체 생성
-MotorControl motorControl;
-
-void setup() {
-  Serial.begin(9600);
-  bluetoothControl.begin(9600);
-  Serial.println("Bluetooth communication initialized.");
-  initMatrices();
-  Serial.println("Matrix initialized");
-  motorControl.init(); // 모터 제어 라이브러리 초기화
-  randomSeed(analogRead(0)); // 랜덤 시드 초기화
->>>>>>> 469c445ca884ca7cf1e5c0664834c3b258adb4aa
-=======
->>>>>>> cd879afc0c03ae7f5d50ab9c7a3f15c921545232
 }
 
 void loop() {

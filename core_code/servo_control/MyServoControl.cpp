@@ -1,9 +1,9 @@
 #include "MyServoControl.h"
 
-MyServoControl::MyServoControl() {}
+MyServoControl::MyServoControl() : currentAngle1(NEUTRAL1), currentAngle2(NEUTRAL2) {}
 
 void MyServoControl::begin() {
-//  Serial.begin(9600);
+  // Serial.begin(9600);
 
   // Configure Timer/Counter1 for Fast PWM mode
   cli(); // Disable global interrupts
@@ -23,48 +23,54 @@ void MyServoControl::begin() {
 }
 
 void MyServoControl::positionSet() {
-  OCR1A = NEUTRAL1;
-  OCR1B = NEUTRAL2;
+  currentAngle1 = NEUTRAL1;
+  currentAngle2 = NEUTRAL2;
+  updateServo();
 }
 
 void MyServoControl::walkForward() {
-  OCR1A = NEUTRAL1 + ANGLE_RANGE; // Move to max forward position
-  OCR1B = NEUTRAL2 - ANGLE_RANGE;
+  currentAngle1 = NEUTRAL1 + ANGLE_RANGE; // Move to max forward position
+  currentAngle2 = NEUTRAL2 - ANGLE_RANGE;
+  updateServo();
 }
 
 void MyServoControl::walkBackward() {
-  OCR1A = NEUTRAL1 - ANGLE_RANGE; // Move to max backward position
-  OCR1B = NEUTRAL2 + ANGLE_RANGE;
-}
-/*
-void MyServoControl::rightTilt(int xValue) {
-  int offset = (ANGLE_RANGE * (504 - xValue)) / 504 / 39 * 300; // Calculate based on xValue
-  Serial.println(offset);
-  OCR1A = NEUTRAL1 + offset;
-  OCR1B = NEUTRAL2 + offset;
+  currentAngle1 = NEUTRAL1 - ANGLE_RANGE; // Move to max backward position
+  currentAngle2 = NEUTRAL2 + ANGLE_RANGE;
+  updateServo();
 }
 
-void MyServoControl::leftTilt(int xValue) {
-  int offset = (ANGLE_RANGE * (xValue - 504)) / 504 / 39 * 300; // Calculate based on xValue
-  OCR1A = NEUTRAL1 - offset;
-  OCR1B = NEUTRAL2 - offset;
+void MyServoControl::increaseAngle(uint16_t value) {
+  currentAngle1 = constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
+  currentAngle2 = constrain(currentAngle2 + value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
+  updateServo();
 }
 
-void MyServoControl::handleXValue(int xValue) {
-  if (xValue < 504) {
-    rightTilt(xValue);
-  } else if (xValue > 504) {
-    leftTilt(xValue);
-  } else {
-    OCR1A = NEUTRAL1;
-    OCR1B = NEUTRAL2;
-  }
-} 
+void MyServoControl::decreaseAngle(uint16_t value) {
+  currentAngle1 = constrain(currentAngle1 - value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
+  currentAngle2 = constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
+  updateServo();
+}
 
-void MyServoControl::handleButtonPress(char button) {
-  if (button == 'A') {
-    walkForward();
-  } else if (button == 'C') {
-    walkBackward();
-  }
-}*/
+void MyServoControl::tiltRight(uint16_t value) {
+  currentAngle1 = constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
+  currentAngle2 = constrain(currentAngle2 + value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
+  updateServo();
+}
+
+void MyServoControl::tiltLeft(uint16_t value) {
+  currentAngle1 = constrain(currentAngle1 - value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
+  currentAngle2 = constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
+  updateServo();
+}
+
+void MyServoControl::upDownTilt(uint16_t value) {
+  currentAngle1 = constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
+  currentAngle2 = constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
+  updateServo();
+}
+
+void MyServoControl::updateServo() {
+  OCR1A = currentAngle1;
+  OCR1B = currentAngle2;
+}
