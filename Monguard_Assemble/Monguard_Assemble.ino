@@ -18,6 +18,7 @@ void setup() {
   initMatrices();
   Serial.println("Matrix initialized");
   motorControl.init(); // 모터 제어 라이브러리 초기화
+  randomSeed(analogRead(0)); // 랜덤 시드 초기화
 }
 
 void loop() {
@@ -52,17 +53,27 @@ void loop() {
     Serial.print(buttonE);
     Serial.println();
 
-    // 얼굴 표정 부분
-    setFace(normalEyes, flatMouth);    // ㅡ.ㅡ
-    delay(2000);
-    setFace(squintEyes, openMouth);    // >..<
-    delay(2000);
-    setFace(normalEyes, smileMouth); // ^__^
-    delay(2000);
-    setFace(surprisedEyes, openMouth); // O_O
-    delay(2000);
-    winkFace();  // 윙크 표정
-    delay(2000);
+    // 버튼 B가 눌렸을 때 얼굴 표정을 랜덤으로 변경
+    if (buttonB == 'B') { // 버튼 B가 눌린 상태
+      int randomFace = random(5); // 0부터 4까지 랜덤 숫자 생성 (표정 5개)
+      switch (randomFace) {
+        case 0:
+          setFace(normalEyes, flatMouth); // ㅡ.ㅡ
+          break;
+        case 1:
+          setFace(squintEyes, openMouth); // >..<
+          break;
+        case 2:
+          setFace(normalEyes, smileMouth); // ^__^
+          break;
+        case 3:
+          setFace(surprisedEyes, openMouth); // O_O
+          break;
+        case 4:
+          winkFace(); // 윙크 표정
+          break;
+      }
+    }
 
     // 모터 제어 함수 호출
     motorControl.setSpeed(1, V_Left); // 좌측 모터 속도 설정
