@@ -1,24 +1,18 @@
-#include <SoftwareSerial.h>
 #include <Arduino.h>
-#include "MotorControl.h" // MotorControl 라이브러리 추가
+#include "MotorControl.h"
+#include "BluetoothControl.h"
 
 #define RX_PIN 12
 #define TX_PIN 13
 
-SoftwareSerial bluetoothSerial(RX_PIN, TX_PIN); // RX=12, TX=13 BLUETOOTH MODULE
-
-struct DataPacket {
-  char dir;
-  int V_Left;
-  int V_Right;
-  char buttons[5]; // Increased to accommodate Button E
-};
-
-MotorControl motorControl; // MotorControl 객체 생성
+// BluetoothControl 객체 생성
+BluetoothControl bluetoothControl(RX_PIN, TX_PIN);
+// MotorControl 객체 생성
+MotorControl motorControl;
 
 void setup() {
   Serial.begin(9600);
-  bluetoothSerial.begin(9600);
+  bluetoothControl.begin(9600);
 
   Serial.println("Bluetooth communication initialized.");
 
@@ -26,12 +20,13 @@ void setup() {
 }
 
 void loop() {
-  if (bluetoothSerial.available() >= sizeof(DataPacket)) { // Wait until a complete data packet is available
-    // Read the data packet
-    DataPacket receivedPacket;
-    bluetoothSerial.readBytes((char *)&receivedPacket, sizeof(DataPacket));
+  DataPacket receivedPacket; // 데이터를 받을 패킷 구조체 생성
 
-    // Parse the data packet
+  // 블루투스로부터 데이터를 읽음
+  if (bluetoothControl.readData(receivedPacket)) {
+    // 데이터를 성공적으로 읽었을 때만 아래 코드 실행
+
+    // 데이터 패킷에서 정보 추출
     char dir = receivedPacket.dir;
     int V_Left = receivedPacket.V_Left;
     int V_Right = receivedPacket.V_Right;
@@ -41,7 +36,7 @@ void loop() {
     char buttonD = receivedPacket.buttons[3];
     char buttonE = receivedPacket.buttons[4];
 
-    // Print the received data
+    // 읽은 데이터 출력
     Serial.print("Received Dir: ");
     Serial.print(dir);
     Serial.print(" V_Left: ");
