@@ -1,5 +1,15 @@
 #include <SoftwareSerial.h>
-#include <Arduino.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+
+// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 #define PORTD_BUTTON_A  0x04 // PIN2
 #define PORTD_BUTTON_B  0x08 // PIN3
@@ -45,7 +55,19 @@ void setup() {
   DDRB &= ~PORTB_BUTTON_E;
   PORTB |= PORTB_BUTTON_E;
 
-  Serial.println("Enter AT commands:");
+  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+
+  // Clear the display
+  display.clearDisplay();
+  display.display();
+
+  // Set text size and color
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
 }
 
 void loop() {
@@ -60,9 +82,12 @@ void loop() {
   if (Y > 506) { 
     dir = 'F'; // Front
     speed = map(Y, 506, 1023, 0, 255);
-  } else {
+  } else if(Y <505){
     dir = 'B'; // Back
     speed = map(Y, 0, 506, 255, 0);
+  } else {
+    dir = 'N';
+    speed = 0;
   }
 
   int V_Left, V_Right;
@@ -107,6 +132,7 @@ void loop() {
   dataPacket.buttons[3] = buttons[3];
   dataPacket.buttons[4] = buttons[4];
 
+  // Send data packet via Bluetooth
   mySerial.write((uint8_t *)&dataPacket, sizeof(dataPacket));
 
   // Print debug information
@@ -118,6 +144,41 @@ void loop() {
   Serial.print(V_Right);
   Serial.print(" Buttons: ");
   Serial.println(buttons);
+
+// Display information on OLED
+  display.clearDisplay();
+
+  // Convert direction to full text
+  String fullDir;
+  if (dir == 'F') {
+    fullDir = "Forward";
+  } else if (dir == 'B') {
+    fullDir = "Backward";
+  } else {
+    fullDir = "Stop";
+  }
+
+  // Print only pressed buttons
+  display.setTextSize(2);
+  display.setCursor(0, 0);
+  //display.print("Dir: ");
+  display.println(fullDir);
+  display.setTextSize(1);
+  display.print("V_Left: ");
+  display.println(V_Left);
+  display.print("V_Right: ");
+  display.println(V_Right);
+  display.setTextSize(2);
+  display.print("Buttons: ");
+
+  // Check and print pressed buttons
+  for (int i = 0; i < 5; i++) {
+    if (buttons[i] != '0') {
+      display.print(buttons[i]);
+    }
+  }
+
+  display.display();
 
   delay(50);
 }
