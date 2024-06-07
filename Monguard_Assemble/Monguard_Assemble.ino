@@ -16,6 +16,7 @@
 #define NUMBER_OF_ROWS 8
 #define pinTrig 8
 #define pinEcho 7
+#define BUZZER_PIN 11
 
 BluetoothControl bluetoothControl(RX_PIN, TX_PIN); // BluetoothControl 객체 생성
 MotorControl motorControl; // MotorControl 객체 생성
@@ -24,6 +25,7 @@ UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
 MyServoControl myServo;
 MPU9250Library mpuSensor;
 int count = 0; //sleep mode용 카운트
+MyMusic music(BUZZER_PIN); //스피커
 
 void setup() {
   Serial.begin(9600);
@@ -43,6 +45,14 @@ void setup() {
 }
 
 void loop() {
+
+  // music.playSmileMelody();
+  // delay(2000);
+
+  // music.playCryMelody();
+  // delay(2000);
+}
+
   double distance = sensor.measureDistanceCm(); //거리
   int x_b = sensor.getXB(); // 초음파 아우풋 10cm 이내 값이 1 아니면 0
   DataPacket receivedPacket; // 데이터를 받을 패킷 구조체 생성
@@ -143,23 +153,6 @@ void loop() {
         delay(500);
       }
 
-    }
-
-    if (dir_FB == 'N' && dir_LR == 'N'){ //sleep 모드 활성화
-      count += 1;
-      delay(500);
-      if (count == 10){
-        while(count == 10){
-          mpuSensor.update();
-          face.setFace("normal");
-          if (mpuSensor.isThresholdExceeded()){
-            count += 1;
-          }
-        }
-      }
-    }
-    else {
-      return 0;
     }
     
 
