@@ -31,7 +31,8 @@ void setup() {
   myServo.begin();
 
   face.setFace("squint");
-  myServo.positionSet(1);
+  myServo.positionSet(10);
+
 }
 
 void loop() {
@@ -98,6 +99,60 @@ void loop() {
     motorControl.setSpeed(2, V_Right); // 우측 모터 속도 설정
     motorControl.setDirection(1, dir_FB); // 좌측 모터 방향 설정
     motorControl.setDirection(2, dir_FB); // 우측 모터 방향 설정
+    
+    if (V_Left>V_Right){ //좌측으로 갈때 좌측 틸팅
+      if (0 <= V_Left - V_Right && V_Left - V_Right <= 51) {
+        myServo.tiltLeft(60, 1);
+      }
+      if (52 <= V_Left - V_Right && V_Left - V_Right <= 103) {
+        myServo.tiltLeft(120, 1);
+      }
+      if (104 <= V_Left - V_Right && V_Left - V_Right <= 155) {
+        myServo.tiltLeft(180, 1);
+      }
+      if (156 <= V_Left - V_Right && V_Left - V_Right <= 207) {
+        myServo.tiltLeft(240, 1);
+      }
+      else {
+        myServo.tiltLeft(300, 1);
+      }
+    }
+
+    if (V_Left <V_Right){ //우측으로 갈때 우측 틸팅
+      if (0 <= V_Right - V_Left && V_Right - V_Left <= 51) {
+        myServo.tiltRight(60, 1);
+      }
+      if (52 <= V_Right - V_Left && V_Right - V_Left <= 103) {
+        myServo.tiltRight(120, 1);
+      }
+      if (104 <= V_Right - V_Left && V_Right - V_Left <= 155) {
+        myServo.tiltRight(180, 1);
+      }
+      if (156 <= V_Right - V_Left && V_Right - V_Left <= 207) {
+        myServo.tiltRight(240, 1);
+      }
+      else {
+        myServo.tiltRight(300, 1);
+      }
+    }
+
+    if (V_Left <V_Right){ //우측으로 갈때 우측 틸팅
+      if (0 <= V_Right - V_Left && V_Right - V_Left <= 51) {
+        myServo.tiltRight(60, 1);
+      }
+      if (52 <= V_Right - V_Left && V_Right - V_Left <= 103) {
+        myServo.tiltRight(120, 1);
+      }
+      if (104 <= V_Right - V_Left && V_Right - V_Left <= 155) {
+        myServo.tiltRight(180, 1);
+      }
+      if (156 <= V_Right - V_Left && V_Right - V_Left <= 207) {
+        myServo.tiltRight(240, 1);
+      }
+      else {
+        myServo.tiltRight(300, 1);
+      }
+    }
 
     if (V_Left == 'N' && V_Right == 'N' && dir_FB == 'N'){ //sleep 모드 활성화
       count += 1;
