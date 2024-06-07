@@ -213,6 +213,11 @@ const uint8_t faceControl::sadMouth2[8] = {
 faceControl::faceControl(uint8_t DIN, uint8_t CS, uint8_t CLK, uint8_t NUM_MATRICES)
     : _DIN(DIN), _CS(CS), _CLK(CLK), _NUM_MATRICES(NUM_MATRICES) {}
 
+unsigned long previousMillis = 0;
+const long interval = 500; // Interval for blinking (500ms)
+bool isWinking = false;
+bool winkState = false;
+
 void faceControl::begin() {
     pinMode(_CLK, OUTPUT);
     pinMode(_DIN, OUTPUT);
@@ -246,7 +251,10 @@ void faceControl::setFace(String expression) {
     } else if (expression == "surprised") {
         surprisedface();
     } else if (expression == "wink") {
+        isWinking = true;
+        lastUpdateTime = millis();
         winkface();
+//        update();
     } else if (expression == "sad") {
         sadface();
     } else if (expression == "angry") {
@@ -311,12 +319,7 @@ void faceControl::surprisedface() {
 }
 
 void faceControl::winkface() {
-    for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
-        write_Max7219(0, row + 1, winkLeft[row]);
-        write_Max7219(1, row + 1, winkMouth1[row]);
-        write_Max7219(2, row + 1, winkMouth2[row]);
-        write_Max7219(3, row + 1, winkRight[row]);
-    }
+  isWinking = true;
 }
 
 void faceControl::sadface() {
@@ -334,5 +337,30 @@ void faceControl::angryface() {
         write_Max7219(1, row + 1, flatMouth1[row]);
         write_Max7219(2, row + 1, flatMouth2[row]);
         write_Max7219(3, row + 1, angryEyesRight[row]);
+    }
+}
+
+void faceControl::winking() {
+    unsigned long currentMillis = millis();
+    if (isWinking && currentMillis - previousMillis >= interval) {
+        previousMillis = currentMillis;
+        winkState = !winkState;
+        if (winkState) {
+            // 눈을 뜬 상태
+            for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
+                write_Max7219(0, row + 1, winkRight[row]);
+                write_Max7219(1, row + 1, winkMouth1[row]);
+                write_Max7219(2, row + 1, winkMouth2[row]);
+                write_Max7219(3, row + 1, winkRight[row]);
+            }
+        } else {
+            // 눈을 깜빡이는 상태
+            for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
+                write_Max7219(0, row + 1, winkLeft[row]);
+                write_Max7219(1, row + 1, winkMouth1[row]);
+                write_Max7219(2, row + 1, winkMouth2[row]);
+                write_Max7219(3, row + 1, winkRight[row]);
+            }
+        }
     }
 }

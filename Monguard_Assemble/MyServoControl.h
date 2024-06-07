@@ -23,7 +23,7 @@ private:
   
   uint16_t currentAngle1;
   uint16_t currentAngle2;
-
+  
   void updateServo();
 };
 
