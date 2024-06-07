@@ -318,7 +318,7 @@ void faceControl::winkface() {
         write_Max7219(3, row + 1, winkRight[row]);
     }
     
-    delay(100);
+    //delay(100);
 
     for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
         write_Max7219(0, row + 1, winkRight[row]);
@@ -327,7 +327,7 @@ void faceControl::winkface() {
         write_Max7219(3, row + 1, winkRight[row]);
     }
 
-    delay(100);
+    //delay(100);
 
     for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
         write_Max7219(0, row + 1, winkLeft[row]);
@@ -336,7 +336,7 @@ void faceControl::winkface() {
         write_Max7219(3, row + 1, winkRight[row]);
     }
     
-    delay(100);
+    //delay(100);
 
     for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
         write_Max7219(0, row + 1, winkRight[row]);
@@ -345,7 +345,7 @@ void faceControl::winkface() {
         write_Max7219(3, row + 1, winkRight[row]);
     }
 
-    delay(100);
+    //delay(100);
 
     for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
         write_Max7219(0, row + 1, winkLeft[row]);
@@ -354,7 +354,7 @@ void faceControl::winkface() {
         write_Max7219(3, row + 1, winkRight[row]);
     }
     
-    delay(100);
+    //delay(100);
 
     for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
         write_Max7219(0, row + 1, winkRight[row]);

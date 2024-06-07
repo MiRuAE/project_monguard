@@ -80,10 +80,10 @@ void loop() {
   char dir_FB;
   char dir_LR;
 
-  if (Y > 506) { 
+  if (Y > 510) { 
     dir_FB = 'F'; // Front
     speed = map(Y, 506, 1023, 0, 255);
-  } else if (Y < 505) {
+  } else if (Y < 500) {
     dir_FB = 'B'; // Back
     speed = map(Y, 0, 506, 255, 0);
   } else {
@@ -91,9 +91,9 @@ void loop() {
     speed = 0;
   }
 
-  if (X > 504) {
+  if (X > 510) {
     dir_LR = 'R'; // Right
-  } else if (X < 504) {
+  } else if (X < 500) {
     dir_LR = 'L'; // Left
   } else {
     dir_LR = 'N'; // Neutral
@@ -164,28 +164,33 @@ void loop() {
   display.clearDisplay();
 
   // Convert direction to full text
-  String fullDir;
+  String fullDir_FB;
   if (dir_FB == 'F') {
-    fullDir = "Forward";
+    fullDir_FB = "Forward";
   } else if (dir_FB == 'B') {
-    fullDir = "Backward";
+    fullDir_FB = "Backward";
   } else {
-    fullDir = "Stop";
+    fullDir_FB = "Stop";
   }
   
+  String fullDir_LR;
   if (dir_LR == 'L') {
-    fullDir += " and Turn Left";
+    fullDir_LR = "Left";
   } else if (dir_LR == 'R') {
-    fullDir += " and Turn Right";
+    fullDir_LR = "Right";
+  } else {
+    fullDir_LR = "Stop";
   }
 
   // Print only pressed buttons
   display.setTextSize(1);
   display.setCursor(0, 0);
-  display.println("Direction: ");
-  //display.println(fullDir);
-  display.print(dir_FB);
+  //display.println("Direction: ");
+  //display.print(fullDir_FB);
+  display.setTextSize(2);
+  display.print(fullDir_FB);
   display.println(dir_LR);
+  display.setTextSize(1);
   display.print("V_Left: ");
   display.println(V_Left);
   display.print("V_Right: ");
@@ -199,6 +204,7 @@ void loop() {
       display.print(buttons[i]);
     }
   }
+  
 
   display.display();
 
