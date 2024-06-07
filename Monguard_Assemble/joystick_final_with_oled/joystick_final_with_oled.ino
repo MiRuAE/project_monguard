@@ -20,7 +20,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define X_CHANNEL 0x00 // ADC0
 #define Y_CHANNEL 0x01 // ADC1
 
-int sleep_count = 0; // check sleep mode
+//int sleep_count = 0; // check sleep mode
 
 SoftwareSerial mySerial(11, 12); // TX=11, RX=12 BLUETOOTH MODULE
 
@@ -84,18 +84,18 @@ void loop() {
   char dir_FB;
   char dir_LR;
 
-  if (Y > 510) { 
+  if (Y > 508) { 
     dir_FB = 'F'; // Front
-    speed = map(Y, 506, 1023, 0, 255);
-  } else if (Y < 500) {
+    speed = map(Y, 508, 1023, 0, 255);
+  } else if (Y < 503) {
     dir_FB = 'B'; // Back
-    speed = map(Y, 0, 506, 255, 0);
+    speed = map(Y, 0, 503, 255, 0);
   } else {
     dir_FB = 'N'; // Neutral
     speed = 0;
   }
 
-  if (X > 510) {
+  if (X > 506) {
     dir_LR = 'R'; // Right
   } else if (X < 500) {
     dir_LR = 'L'; // Left
@@ -116,8 +116,8 @@ void loop() {
     V_Right = speed;
   }
 
-  V_Left = constrain(V_Left, 0, 255);
-  V_Right = constrain(V_Right, 0, 255);
+  V_Left = constrain(V_Left, 0, 200);
+  V_Right = constrain(V_Right, 0, 200);
 
   // Read button states using PIND and PINB registers and format into a single byte
   char buttons[5] = {'0', '0', '0', '0', '0'}; // Increased to accommodate Button E
@@ -137,15 +137,16 @@ void loop() {
     buttons[4] = 'E';
   }
 
-  if(dir_FB == 'N' && dir_LR == 'N') {
-    sleep_count += 1;
-    if(sleep_count == 30) {
-      mode = 'S'; // Sleep mode
-      //sleep_count = 0;
-    }
+  if(!(PIND & PORTD_BUTTON_D)) {
+    mode = 'S'; // Sleep mode
+    // sleep_count += 1;
+    // if(sleep_count == 30) {
+    //   mode = 'S'; // Sleep mode
+    //   //sleep_count = 0;
+    // }
   } else {
     mode = 'W'; // Awake mode
-    sleep_count = 0;
+    //sleep_count = 0;
   }
 
   // Send data packet: [dir_FB, dir_LR, V_Left, V_Right, buttonState]

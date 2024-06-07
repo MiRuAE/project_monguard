@@ -13,12 +13,15 @@ void MyMusic::playMelody(const int melody[], const int noteDurations[], int leng
     delay(pauseBetweenNotes);
     noTone(_pin);
   }
+  delay(1200);
 }
 
 void MyMusic::playSmileMelody() {
   playMelody(smileMelody, smileNoteDurations, 7);
+  delay(1000);
 }
 
 void MyMusic::playCryMelody() {
   playMelody(cryMelody, cryNoteDurations, 10);
+  delay(1000);
 }

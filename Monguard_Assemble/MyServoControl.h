@@ -10,6 +10,7 @@ public:
   void walkForward(uint16_t speed);
   void walkBackward(uint16_t speed);
   void positionSet(uint16_t speed);
+  void Sleep(uint16_t speed);
   void increaseAngle(uint16_t value, uint16_t speed);
   void decreaseAngle(uint16_t value, uint16_t speed);
   void tiltLeft(uint16_t value, uint16_t speed);
@@ -19,7 +20,7 @@ public:
 private:
   const uint16_t NEUTRAL1 = 3925;
   const uint16_t NEUTRAL2 = 2375;
-  const uint16_t ANGLE_RANGE = 300;
+  const uint16_t ANGLE_RANGE = 200;
 
   uint16_t currentAngle1;
   uint16_t currentAngle2;
