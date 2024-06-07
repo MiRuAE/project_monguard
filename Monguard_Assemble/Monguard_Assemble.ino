@@ -39,7 +39,7 @@ void loop() {
     // 데이터를 성공적으로 읽었을 때만 아래 코드 실행
 
     // 데이터 패킷에서 정보 추출
-    char dir = receivedPacket.dir;
+    //char dir = receivedPacket.dir;
     int V_Left = receivedPacket.V_Left;
     int V_Right = receivedPacket.V_Right;
     char buttonA = receivedPacket.buttons[0];
@@ -50,7 +50,7 @@ void loop() {
 
     // 읽은 데이터 출력
     //Serial.print("Received Dir: ");
-    Serial.print(dir);
+//    Serial.print(dir);
     Serial.print(" V_Left: ");
     Serial.print(V_Left);
     Serial.print(" V_Right: ");
@@ -91,8 +91,8 @@ void loop() {
     // 모터 제어 함수 호출
     motorControl.setSpeed(1, V_Left); // 좌측 모터 속도 설정
     motorControl.setSpeed(2, V_Right); // 우측 모터 속도 설정
-    motorControl.setDirection(1, dir); // 좌측 모터 방향 설정
-    motorControl.setDirection(2, dir); // 우측 모터 방향 설정
+//    motorControl.setDirection(1, dir); // 좌측 모터 방향 설정
+//    motorControl.setDirection(2, dir); // 우측 모터 방향 설정
 
     if (buttonA == 'A') {
       myServo.walkForward(5);
