@@ -127,7 +127,6 @@ void loop() {
       }
     }
 
-
     if (Mode == 'S'){ //sleep 모드 활성화
       mpuSensor.update();
       face.setFace("normal");
