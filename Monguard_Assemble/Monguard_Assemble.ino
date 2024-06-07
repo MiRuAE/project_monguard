@@ -160,13 +160,17 @@ void loop() {
     if (Mode == 'S'){ //sleep 모드 활성화
       mpuSensor.update();
       face.setFace("normal");
-      if (mpuSensor.isThresholdExceeded()){
-        Serial.print("aaaaaaaa");
-        return 0;
-      } else {
-        return 0;
-      }
+      // if (mpuSensor.isThresholdExceeded()){
+      //   Serial.print("aaaaaaaa");
+      //   face.setFace("smile");
+      //   delay(5000);
+      // }
     }
+    // if (mpuSensor.isThresholdExceeded()){
+    //     //Serial.print("aaaaaaaa");
+    //     face.setFace("wink");
+    //     delay(50000);
+    // }
 
     if (buttonA == 'A') {
       myServo.walkForward(5);
