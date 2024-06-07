@@ -10,10 +10,14 @@ public:
   void begin();
   void setFace(String expression);
   void clearDisplay();
+  void winking();
 
 private:
   uint8_t _DIN, _CS, _CLK, _NUM_MATRICES;
   const uint8_t NUMBER_OF_ROWS = 8;
+
+  unsigned long lastUpdateTime;
+  bool isWinking;
 
   // Declare expression arrays in the header file
   static const uint8_t normalEyes[8];

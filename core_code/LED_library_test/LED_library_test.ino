@@ -22,6 +22,7 @@ void loop() {
   face.setFace("surprised");
   delay(2000);
   face.setFace("wink");
+  face.winking();
   delay(2000);
   face.setFace("sad");
   delay(2000);
