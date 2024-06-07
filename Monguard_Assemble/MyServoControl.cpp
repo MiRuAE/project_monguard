@@ -22,55 +22,63 @@ void MyServoControl::begin() {
   OCR1B = NEUTRAL2; // Timer counts in microseconds
 }
 
-void MyServoControl::positionSet() {
-  currentAngle1 = NEUTRAL1;
-  currentAngle2 = NEUTRAL2;
-  updateServo();
+void MyServoControl::positionSet(uint16_t speed) {
+  updateServo(NEUTRAL1, NEUTRAL2, speed);
 }
 
-void MyServoControl::walkForward() {
-  currentAngle1 = NEUTRAL1 + ANGLE_RANGE; // Move to max forward position
-  currentAngle2 = NEUTRAL2 - ANGLE_RANGE;
-  updateServo();
+void MyServoControl::walkForward(uint16_t speed) {
+  updateServo(NEUTRAL1 + ANGLE_RANGE, NEUTRAL2 - ANGLE_RANGE, speed);
 }
 
-void MyServoControl::walkBackward() {
-  currentAngle1 = NEUTRAL1 - ANGLE_RANGE; // Move to max backward position
-  currentAngle2 = NEUTRAL2 + ANGLE_RANGE;
-  updateServo();
+void MyServoControl::walkBackward(uint16_t speed) {
+  updateServo(NEUTRAL1 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE, speed);
 }
 
-void MyServoControl::increaseAngle(uint16_t value) {
-  currentAngle1 = constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
-  currentAngle2 = constrain(currentAngle2 + value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
-  updateServo();
+void MyServoControl::increaseAngle(uint16_t value, uint16_t speed) {
+  updateServo(constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE),
+              constrain(currentAngle2 + value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE),
+              speed);
 }
 
-void MyServoControl::decreaseAngle(uint16_t value) {
-  currentAngle1 = constrain(currentAngle1 - value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
-  currentAngle2 = constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
-  updateServo();
+void MyServoControl::decreaseAngle(uint16_t value, uint16_t speed) {
+  updateServo(constrain(currentAngle1 - value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE),
+              constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE),
+              speed);
 }
 
-void MyServoControl::tiltRight(uint16_t value) {
-  currentAngle1 = constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
-  currentAngle2 = constrain(currentAngle2 + value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
-  updateServo();
+void MyServoControl::tiltRight(uint16_t value, uint16_t speed) {
+  updateServo(constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE),
+              constrain(currentAngle2 + value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE),
+              speed);
 }
 
-void MyServoControl::tiltLeft(uint16_t value) {
-  currentAngle1 = constrain(currentAngle1 - value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
-  currentAngle2 = constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
-  updateServo();
+void MyServoControl::tiltLeft(uint16_t value, uint16_t speed) {
+  updateServo(constrain(currentAngle1 - value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE),
+              constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE),
+              speed);
 }
 
-void MyServoControl::upDownTilt(uint16_t value) {
-  currentAngle1 = constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
-  currentAngle2 = constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
-  updateServo();
+void MyServoControl::upDownTilt(uint16_t value, uint16_t speed) {
+  updateServo(constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE),
+              constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE),
+              speed);
 }
 
-void MyServoControl::updateServo() {
-  OCR1A = currentAngle1;
-  OCR1B = currentAngle2;
+void MyServoControl::updateServo(uint16_t targetAngle1, uint16_t targetAngle2, uint16_t speed) {
+  int step1 = (targetAngle1 > currentAngle1) ? 1 : -1;
+  int step2 = (targetAngle2 > currentAngle2) ? 1 : -1;
+
+  while (currentAngle1 != targetAngle1 || currentAngle2 != targetAngle2) {
+    if (currentAngle1 != targetAngle1) {
+      currentAngle1 += step1;
+    }
+    if (currentAngle2 != targetAngle2) {
+      currentAngle2 += step2;
+    }
+
+    OCR1A = currentAngle1;
+    OCR1B = currentAngle2;
+
+    delay(speed);
+  }
 }
