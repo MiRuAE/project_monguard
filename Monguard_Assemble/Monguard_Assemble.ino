@@ -3,9 +3,13 @@
 #include "BluetoothControl.h"
 #include "faceControl.h"
 #include "MyServoControl.h"
-#include "MyMusic.h"
+//#include "MyMusic.h"
 #include "MPU9250Library.h"
 #include "UltrasonicSensor.h"
+
+#include "MarioMusic.h"
+
+//MarioMusic marioMusic;
 
 #define RX_PIN 12
 #define TX_PIN 13
@@ -18,6 +22,8 @@
 #define pinEcho 7
 #define BUZZER_PIN 11
 
+int mode_count = 0;
+
 BluetoothControl bluetoothControl(RX_PIN, TX_PIN); // BluetoothControl 객체 생성
 MotorControl motorControl; // MotorControl 객체 생성
 faceControl face(DIN, CS, CLK, NUM_MATRICES); // faceControl 객체 생성
@@ -25,8 +31,7 @@ UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
 MyServoControl myServo;
 MPU9250Library mpuSensor;
 
-int count = 0; //sleep mode용 카운트
-MyMusic music(BUZZER_PIN); //스피커
+//MyMusic music(BUZZER_PIN); //스피커
 
 
 void setup() {
@@ -42,21 +47,12 @@ void setup() {
   myServo.positionSet(10);
 
   mpuSensor.begin(); //mpu9250 시작
-  sensor.begin(); //초음파센서 시작
+  //sensor.begin(); //초음파센서 시작
 
 }
 
 void loop() {
 
-  // music.playSmileMelody();
-  // delay(2000);
-
-  // music.playCryMelody();
-  // delay(2000);
-}
-
-  double distance = sensor.measureDistanceCm(); //거리
-  int x_b = sensor.getXB(); // 초음파 아우풋 10cm 이내 값이 1 아니면 0
   DataPacket receivedPacket; // 데이터를 받을 패킷 구조체 생성
 
   // 블루투스로부터 데이터를 읽음
@@ -75,8 +71,10 @@ void loop() {
     char buttonD = receivedPacket.buttons[3];
     char buttonE = receivedPacket.buttons[4];
 
+    double distance;
+
     // 읽은 데이터 출력
-    //Serial.print("Received Dir: ");
+    Serial.print("Received Dir: ");
     Serial.print(dir_FB);
     Serial.print(dir_LR);
     Serial.print(" V_Left: ");
@@ -89,9 +87,66 @@ void loop() {
     Serial.print(buttonC);
     Serial.print(buttonD);
     Serial.print(buttonE);
-    Serial.print(Mode);
+    // Serial.print(" Mode: ");
+    // Serial.print(Mode);
+    // Serial.print(" Distance: ");
+    // Serial.print(distance);
+    //Serial.print(" Count: ");
+    Serial.print(mode_count);
     Serial.println();
     
+
+    // 모터 제어 함수 호출
+    motorControl.setSpeed(1, V_Left); // 좌측 모터 속도 설정
+    motorControl.setSpeed(2, V_Right); // 우측 모터 속도 설정
+    motorControl.setDirection(1, dir_FB); // 좌측 모터 방향 설정
+    motorControl.setDirection(2, dir_FB); // 우측 모터 방향 설정
+    
+    if (V_Left>V_Right){ //좌측으로 갈때 좌측 틸팅
+      if (0 <= V_Left - V_Right && V_Left - V_Right <= 150) {
+        myServo.tiltLeft(30 , 1);
+      }
+      if (151 <= V_Left - V_Right && V_Left - V_Right <= 255) {
+        myServo.tiltLeft(100, 1);
+      }
+      else {
+        myServo.tiltLeft(0, 1);
+      }
+    }
+
+    if (V_Left <V_Right){ //우측으로 갈때 우측 틸팅
+      if (0 <= V_Right - V_Left && V_Right - V_Left <= 150) {
+        myServo.tiltRight(30, 1);
+      }
+      if (150 <= V_Right - V_Left && V_Right - V_Left <= 255) {
+        myServo.tiltRight(100, 1);
+      }
+      else {
+        myServo.tiltRight(0, 1);
+      }
+    }
+
+    if (Mode == 'S'){ //sleep 모드 활성화
+      face.setFace("normal");
+      myServo.Sleep(1);
+      mode_count += 1;
+      
+    }
+    mpuSensor.update();
+    if (mode_count >0 && mpuSensor.isThresholdExceeded()){
+        //Serial.print("aaaaaaaa");
+        face.setFace("wink");
+        
+        myServo.positionSet(10);
+        //delay(50000);
+        mode_count = 0;
+    }
+
+
+    if (buttonA == 'A') {
+      myServo.walkForward(5);
+    }
+
     // 버튼 B가 눌렸을 때 얼굴 표정을 랜덤으로 변경
     if (buttonB == 'B') { // 버튼 B가 눌린 상태
       int randomFace = random(6); // 0부터 4까지 랜덤 숫자 생성 (표정 5개)
@@ -116,70 +171,36 @@ void loop() {
           break;
       }
     }
-
-    // 모터 제어 함수 호출
-    motorControl.setSpeed(1, V_Left); // 좌측 모터 속도 설정
-    motorControl.setSpeed(2, V_Right); // 우측 모터 속도 설정
-    motorControl.setDirection(1, dir_FB); // 좌측 모터 방향 설정
-    motorControl.setDirection(2, dir_FB); // 우측 모터 방향 설정
-    
-    if (V_Left>V_Right){ //좌측으로 갈때 좌측 틸팅
-      if (0 <= V_Left - V_Right && V_Left - V_Right <= 150) {
-        myServo.tiltLeft(75 , 1);
-      }
-      if (151 <= V_Left - V_Right && V_Left - V_Right <= 255) {
-        myServo.tiltLeft(150, 1);
-      }
-      else {
-        myServo.tiltLeft(0, 1);
-      }
-    }
-
-    if (V_Left <V_Right){ //우측으로 갈때 우측 틸팅
-      if (0 <= V_Right - V_Left && V_Right - V_Left <= 150) {
-        myServo.tiltRight(75, 1);
-      }
-      if (150 <= V_Right - V_Left && V_Right - V_Left <= 255) {
-        myServo.tiltRight(150, 1);
-      }
-      else {
-        myServo.tiltRight(0, 1);
-      }
-    }
-    if (x_b==1){ //초음파 10cm 이내의 물체가 발견되면 뒤로 가기
-      while(x_b <=10){
-          motorControl.setSpeed(1, 20); // 좌측 모터 속도 설정
-          motorControl.setSpeed(2, 20); // 우측 모터 속도 설정
-          motorControl.setDirection(1, "B"); // 좌측 모터 방향 설정
-          motorControl.setDirection(2, 'B');
-        x_b += 1;
-        delay(500);
-      }
-
-    }
-    
-
-    if (Mode == 'S'){ //sleep 모드 활성화
-      mpuSensor.update();
-      face.setFace("normal");
-    }
-    // if (mpuSensor.isThresholdExceeded()){
-    //     //Serial.print("aaaaaaaa");
-    //     face.setFace("wink");
-    //     delay(50000);
-    // }
-
-
-    if (buttonA == 'A') {
-      myServo.walkForward(5);
-    }
     
     if (buttonC == 'C') {
       myServo.walkBackward(5);
     }
 
     if (buttonD == 'D') {
-      myServo.positionSet(5);
+      //myServo.positionSet(5);
+      // distance = sensor.measureDistanceCm(); //거리
+      // int x_b = sensor.getXB(); // 초음파 아우풋 10cm 이내 값이 1 아니면 0
+      
+      // if (distance <= 10){ //초음파 10cm 이내의 물체가 발견되면 뒤로 가기
+      // motorControl.setSpeed(1, 20); // 좌측 모터 속도 설정
+      // motorControl.setSpeed(2, 20); // 우측 모터 속도 설정
+      // motorControl.setDirection(1, "B"); // 좌측 모터 방향 설정
+      // motorControl.setDirection(2, 'B');
+      // face.setFace("surprised");
+      // //delay(500);
+    //}
+    }
+
+    if (buttonE == 'E') {
+      myServo.positionSet(10);
+      //marioMusic.playMelody();
+      //delay(5000);
+      // myServo.positionSet(10);
+      // music.playSmileMelody();
+      // delay(200);
+
+      // music.playCryMelody();
+      // delay(200);
     }
   }
 }
