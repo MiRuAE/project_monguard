@@ -4,6 +4,7 @@
 #include "faceControl.h"
 #include "MyServoControl.h"
 #include "MyMusic.h"
+#include "MPU9250Library.h"
 
 #define RX_PIN 12
 #define TX_PIN 13
@@ -17,6 +18,8 @@ BluetoothControl bluetoothControl(RX_PIN, TX_PIN); // BluetoothControl 객체 �
 MotorControl motorControl; // MotorControl 객체 생성
 faceControl face(DIN, CS, CLK, NUM_MATRICES); // faceControl 객체 생성
 MyServoControl myServo;
+MPU9250Library mpuSensor;
+int count = 0; //sleep mode용 카운트
 
 void setup() {
   Serial.begin(9600);
@@ -95,6 +98,24 @@ void loop() {
     motorControl.setSpeed(2, V_Right); // 우측 모터 속도 설정
     motorControl.setDirection(1, dir_FB); // 좌측 모터 방향 설정
     motorControl.setDirection(2, dir_FB); // 우측 모터 방향 설정
+
+    if (V_Left == 'N' && V_Right == 'N' && dir_FB == 'N'){ //sleep 모드 활성화
+      count += 1;
+      delay(500);
+      if (count == 10){
+        mpuSensor.update();
+        face.setFace("normal");
+        if (mpuSensor.isThresholdExceeded()){
+          return 0;
+        }
+      else {
+        return 0;
+      }
+      }
+    else {
+      return 0;
+    }
+    }
 
     if (buttonA == 'A') {
       myServo.walkForward(5);
