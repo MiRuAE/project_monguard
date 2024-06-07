@@ -5,6 +5,7 @@
 #include "MyServoControl.h"
 #include "MyMusic.h"
 #include "MPU9250Library.h"
+#include "UltrasonicSensor.h"
 
 #define RX_PIN 12
 #define TX_PIN 13
@@ -13,10 +14,13 @@
 #define CLK 4
 #define NUM_MATRICES 4
 #define NUMBER_OF_ROWS 8
+#define pinTrig 8
+#define pinEcho 7
 
 BluetoothControl bluetoothControl(RX_PIN, TX_PIN); // BluetoothControl 객체 생성
 MotorControl motorControl; // MotorControl 객체 생성
 faceControl face(DIN, CS, CLK, NUM_MATRICES); // faceControl 객체 생성
+UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
 MyServoControl myServo;
 MPU9250Library mpuSensor;
 int count = 0; //sleep mode용 카운트
@@ -33,11 +37,14 @@ void setup() {
   face.setFace("squint");
   myServo.positionSet(10);
 
-  mpuSensor.begin();
+  mpuSensor.begin(); //mpu9250 시작
+  sensor.begin(); //초음파센서 시작
 
 }
 
 void loop() {
+  double distance = sensor.measureDistanceCm(); //거리
+  int x_b = sensor.getXB(); // 초음파 아우풋 10cm 이내 값이 1 아니면 0
   DataPacket receivedPacket; // 데이터를 받을 패킷 구조체 생성
 
   // 블루투스로부터 데이터를 읽음
@@ -126,7 +133,17 @@ void loop() {
         myServo.tiltRight(0, 1);
       }
     }
+    if (x_b==1){ //초음파 10cm 이내의 물체가 발견되면 뒤로 가기
+      while(x_b <=10){
+          motorControl.setSpeed(1, 20); // 좌측 모터 속도 설정
+          motorControl.setSpeed(2, 20); // 우측 모터 속도 설정
+          motorControl.setDirection(1, "B"); // 좌측 모터 방향 설정
+          motorControl.setDirection(2, 'B');
+        x_b += 1;
+        delay(500);
+      }
 
+    }
 
     if (dir_FB == 'N' && dir_LR == 'N'){ //sleep 모드 활성화
       count += 1;
