@@ -159,22 +159,21 @@ void loop() {
 
     if (dir_FB == 'N' && dir_LR == 'N'){ //sleep 모드 활성화
       count += 1;
-      delay(1000);
-      if (count == 100){
+      //delay(1000);
+      if (count == 50){
         count = 0;
         mpuSensor.update();
         face.setFace("normal");
         if (mpuSensor.isThresholdExceeded()){
           Serial.print("aaaaaaaa");
           return 0;
+        } else {
+          return 0;
         }
-      else {
+      } 
+    } else {
+        count = 0;
         return 0;
-      }
-      }
-    else {
-      return 0;
-    }
     }
 
     if (buttonA == 'A') {
