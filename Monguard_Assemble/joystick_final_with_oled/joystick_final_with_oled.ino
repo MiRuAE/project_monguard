@@ -80,10 +80,10 @@ void loop() {
   char dir_FB;
   char dir_LR;
 
-  if (Y > 506) { 
+  if (Y > 510) { 
     dir_FB = 'F'; // Front
     speed = map(Y, 506, 1023, 0, 255);
-  } else if (Y < 505) {
+  } else if (Y < 500) {
     dir_FB = 'B'; // Back
     speed = map(Y, 0, 506, 255, 0);
   } else {
@@ -91,9 +91,9 @@ void loop() {
     speed = 0;
   }
 
-  if (X > 504) {
+  if (X > 510) {
     dir_LR = 'R'; // Right
-  } else if (X < 504) {
+  } else if (X < 500) {
     dir_LR = 'L'; // Left
   } else {
     dir_LR = 'N'; // Neutral
