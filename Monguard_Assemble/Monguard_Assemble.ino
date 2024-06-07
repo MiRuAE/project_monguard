@@ -33,6 +33,8 @@ void setup() {
   face.setFace("squint");
   myServo.positionSet(10);
 
+  mpuSensor.begin();
+
 }
 
 void loop() {
@@ -67,6 +69,7 @@ void loop() {
     Serial.print(buttonC);
     Serial.print(buttonD);
     Serial.print(buttonE);
+    Serial.print(count);
     Serial.println();
     
     // 버튼 B가 눌렸을 때 얼굴 표정을 랜덤으로 변경
@@ -154,13 +157,15 @@ void loop() {
       }
     }
 
-    if (V_Left == 'N' && V_Right == 'N' && dir_FB == 'N'){ //sleep 모드 활성화
+    if (dir_FB == 'N' && dir_LR == 'N'){ //sleep 모드 활성화
       count += 1;
-      delay(500);
-      if (count == 10){
+      delay(1000);
+      if (count == 100){
+        count = 0;
         mpuSensor.update();
         face.setFace("normal");
         if (mpuSensor.isThresholdExceeded()){
+          Serial.print("aaaaaaaa");
           return 0;
         }
       else {
