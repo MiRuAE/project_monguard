@@ -24,8 +24,10 @@ faceControl face(DIN, CS, CLK, NUM_MATRICES); // faceControl 객체 생성
 UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
 MyServoControl myServo;
 MPU9250Library mpuSensor;
+
 int count = 0; //sleep mode용 카운트
 MyMusic music(BUZZER_PIN); //스피커
+
 
 void setup() {
   Serial.begin(9600);
@@ -64,6 +66,7 @@ void loop() {
     // 데이터 패킷에서 정보 추출
     char dir_FB = receivedPacket.DIR_FB;
     char dir_LR = receivedPacket.DIR_LR;
+    char Mode = receivedPacket.Mode;
     int V_Left = receivedPacket.V_Left;
     int V_Right = receivedPacket.V_Right;
     char buttonA = receivedPacket.buttons[0];
@@ -86,7 +89,7 @@ void loop() {
     Serial.print(buttonC);
     Serial.print(buttonD);
     Serial.print(buttonE);
-    Serial.print(count);
+    Serial.print(Mode);
     Serial.println();
     
     // 버튼 B가 눌렸을 때 얼굴 표정을 랜덤으로 변경
@@ -155,6 +158,17 @@ void loop() {
 
     }
     
+
+    if (Mode == 'S'){ //sleep 모드 활성화
+      mpuSensor.update();
+      face.setFace("normal");
+    }
+    // if (mpuSensor.isThresholdExceeded()){
+    //     //Serial.print("aaaaaaaa");
+    //     face.setFace("wink");
+    //     delay(50000);
+    // }
+
 
     if (buttonA == 'A') {
       myServo.walkForward(5);
