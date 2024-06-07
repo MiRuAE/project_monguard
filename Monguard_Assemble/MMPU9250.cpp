@@ -1,6 +1,6 @@
 #include "MyMPU9250.h"
 
-MyMPU9250::MyMPU9250(float threshold) : threshold(threshold), lastX(0) {}
+MyMPU9250::MyMPU9250(float threshold) : threshold(threshold), lastX(0), x_a(0) {}
 
 bool MyMPU9250::begin() {
   Wire.begin();
@@ -16,7 +16,9 @@ void MyMPU9250::update() {
     float deltaX = abs(currentX - lastX);
 
     if (deltaX > threshold) {
-      Serial.println("good");
+      x_a = 1;  // Set x_a to 1 if threshold is exceeded
+    } else {
+      x_a = 0;  // Set x_a to 0 if threshold is not exceeded
     }
 
     Serial.print("X-axis acceleration: ");
@@ -24,4 +26,8 @@ void MyMPU9250::update() {
 
     lastX = currentX;
   }
+}
+
+int MyMPU9250::getXA() {
+  return x_a;  // Return the current value of x_a
 }
