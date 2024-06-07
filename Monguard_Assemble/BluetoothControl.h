@@ -4,7 +4,8 @@
 #include <SoftwareSerial.h>
 
 struct DataPacket {
-  char dir;
+  char DIR_FB;
+  char DIR_LR;
   int V_Left;
   int V_Right;
   char buttons[5];

@@ -38,7 +38,8 @@ int read_ADC(uint8_t channel) {
 }
 
 struct DataPacket {
-  char dir;
+  char DIR_FB;
+  char DIR_LR;
   int V_Left;
   int V_Right;
   char buttons[5]; // Increased to accommodate Button E
@@ -69,7 +70,6 @@ void setup() {
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
 }
-
 void loop() {
   // Read joystick values
   int X = read_ADC(X_CHANNEL);
@@ -77,26 +77,38 @@ void loop() {
 
   int steer = map(X, 0, 1023, -255, 255); // Steering split
   int speed;
-  char dir;
+  char dir_FB;
+  char dir_LR;
 
   if (Y > 506) { 
-    dir = 'F'; // Front
+    dir_FB = 'F'; // Front
     speed = map(Y, 506, 1023, 0, 255);
-  } else if(Y <505){
-    dir = 'B'; // Back
+  } else if (Y < 505) {
+    dir_FB = 'B'; // Back
     speed = map(Y, 0, 506, 255, 0);
   } else {
-    dir = 'N';
+    dir_FB = 'N'; // Neutral
     speed = 0;
+  }
+
+  if (X > 504) {
+    dir_LR = 'R'; // Right
+  } else if (X < 504) {
+    dir_LR = 'L'; // Left
+  } else {
+    dir_LR = 'N'; // Neutral
   }
 
   int V_Left, V_Right;
 
-  if (steer > 0) { // Turn right
+  if (dir_LR == 'R') { // Turn right
     V_Left = speed;
     V_Right = speed - steer;
-  } else { // Turn left
+  } else if (dir_LR == 'L') { // Turn left
     V_Left = speed + steer;
+    V_Right = speed;
+  } else { // Forward/Backward without turning
+    V_Left = speed;
     V_Right = speed;
   }
 
@@ -121,9 +133,10 @@ void loop() {
     buttons[4] = 'E';
   }
 
-  // Send data packet: [dir, V_Left, V_Right, buttonState]
+  // Send data packet: [dir_FB, dir_LR, V_Left, V_Right, buttonState]
   DataPacket dataPacket;
-  dataPacket.dir = dir;
+  dataPacket.DIR_FB = dir_FB;
+  dataPacket.DIR_LR = dir_LR;
   dataPacket.V_Left = V_Left;
   dataPacket.V_Right = V_Right;
   dataPacket.buttons[0] = buttons[0];
@@ -136,8 +149,10 @@ void loop() {
   mySerial.write((uint8_t *)&dataPacket, sizeof(dataPacket));
 
   // Print debug information
-  Serial.print("Dir: ");
-  Serial.print(dir);
+  Serial.print("DIR_FB: ");
+  Serial.print(dir_FB);
+  Serial.print(" DIR_LR: ");
+  Serial.print(dir_LR);
   Serial.print(" V_Left: ");
   Serial.print(V_Left);
   Serial.print(" V_Right: ");
@@ -145,35 +160,42 @@ void loop() {
   Serial.print(" Buttons: ");
   Serial.println(buttons);
 
-// Display information on OLED
+  // Display information on OLED
   display.clearDisplay();
 
   // Convert direction to full text
   String fullDir;
-  if (dir == 'F') {
+  if (dir_FB == 'F') {
     fullDir = "Forward";
-  } else if (dir == 'B') {
+  } else if (dir_FB == 'B') {
     fullDir = "Backward";
   } else {
     fullDir = "Stop";
   }
+  
+  if (dir_LR == 'L') {
+    fullDir += " and Turn Left";
+  } else if (dir_LR == 'R') {
+    fullDir += " and Turn Right";
+  }
 
   // Print only pressed buttons
-  display.setTextSize(2);
-  display.setCursor(0, 0);
-  //display.print("Dir: ");
-  display.println(fullDir);
   display.setTextSize(1);
+  display.setCursor(0, 0);
+  display.println("Direction: ");
+  //display.println(fullDir);
+  display.print(dir_FB);
+  display.println(dir_LR);
   display.print("V_Left: ");
   display.println(V_Left);
   display.print("V_Right: ");
   display.println(V_Right);
-  display.setTextSize(2);
-  display.print("Buttons: ");
+  display.println("Buttons: ");
 
   // Check and print pressed buttons
   for (int i = 0; i < 5; i++) {
     if (buttons[i] != '0') {
+      display.setTextSize(2);
       display.print(buttons[i]);
     }
   }
