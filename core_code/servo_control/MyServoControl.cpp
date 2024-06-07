@@ -1,11 +1,10 @@
 #include "MyServoControl.h"
 
-MyServoControl::MyServoControl() : currentAngle1(NEUTRAL1), currentAngle2(NEUTRAL2) {}
+MyServoControl::MyServoControl()
+    : currentAngle1(NEUTRAL1), currentAngle2(NEUTRAL2), targetAngle1(NEUTRAL1), targetAngle2(NEUTRAL2),
+      step1(0), step2(0), speed(10), lastUpdate(0) {}
 
 void MyServoControl::begin() {
-  // Serial.begin(9600);
-
-  // Configure Timer/Counter1 for Fast PWM mode
   cli(); // Disable global interrupts
   DDRB |= (1 << PB1) | (1 << PB2); // Set OC1A (PB1) and OC1B (PB2) as output
 
@@ -23,52 +22,70 @@ void MyServoControl::begin() {
 }
 
 void MyServoControl::positionSet(uint16_t speed) {
-  updateServo(NEUTRAL1, NEUTRAL2, speed);
+  targetAngle1 = NEUTRAL1;
+  targetAngle2 = NEUTRAL2;
+  this->speed = speed;
+  moveServo();
 }
 
 void MyServoControl::walkForward(uint16_t speed) {
-  updateServo(NEUTRAL1 + ANGLE_RANGE, NEUTRAL2 - ANGLE_RANGE, speed);
+  targetAngle1 = NEUTRAL1 + ANGLE_RANGE;
+  targetAngle2 = NEUTRAL2 - ANGLE_RANGE;
+  this->speed = speed;
+  moveServo();
 }
 
 void MyServoControl::walkBackward(uint16_t speed) {
-  updateServo(NEUTRAL1 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE, speed);
+  targetAngle1 = NEUTRAL1 - ANGLE_RANGE;
+  targetAngle2 = NEUTRAL2 + ANGLE_RANGE;
+  this->speed = speed;
+  moveServo();
 }
 
 void MyServoControl::increaseAngle(uint16_t value, uint16_t speed) {
-  updateServo(constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE),
-              constrain(currentAngle2 + value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE),
-              speed);
+  targetAngle1 = constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
+  targetAngle2 = constrain(currentAngle2 + value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
+  this->speed = speed;
+  moveServo();
 }
 
 void MyServoControl::decreaseAngle(uint16_t value, uint16_t speed) {
-  updateServo(constrain(currentAngle1 - value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE),
-              constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE),
-              speed);
+  targetAngle1 = constrain(currentAngle1 - value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
+  targetAngle2 = constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
+  this->speed = speed;
+  moveServo();
 }
 
 void MyServoControl::tiltRight(uint16_t value, uint16_t speed) {
-  updateServo(constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE),
-              constrain(currentAngle2 + value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE),
-              speed);
+  targetAngle1 = constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
+  targetAngle2 = constrain(currentAngle2 + value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
+  this->speed = speed;
+  moveServo();
 }
 
 void MyServoControl::tiltLeft(uint16_t value, uint16_t speed) {
-  updateServo(constrain(currentAngle1 - value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE),
-              constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE),
-              speed);
+  targetAngle1 = constrain(currentAngle1 - value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
+  targetAngle2 = constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
+  this->speed = speed;
+  moveServo();
 }
 
 void MyServoControl::upDownTilt(uint16_t value, uint16_t speed) {
-  updateServo(constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE),
-              constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE),
-              speed);
+  targetAngle1 = constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE);
+  targetAngle2 = constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE);
+  this->speed = speed;
+  moveServo();
 }
 
-void MyServoControl::updateServo(uint16_t targetAngle1, uint16_t targetAngle2, uint16_t speed) {
-  int step1 = (targetAngle1 > currentAngle1) ? 1 : -1;
-  int step2 = (targetAngle2 > currentAngle2) ? 1 : -1;
+void MyServoControl::moveServo() {
+  step1 = (targetAngle1 > currentAngle1) ? 1 : -1;
+  step2 = (targetAngle2 > currentAngle2) ? 1 : -1;
+}
 
-  while (currentAngle1 != targetAngle1 || currentAngle2 != targetAngle2) {
+void MyServoControl::update() {
+  unsigned long now = millis();
+  if (now - lastUpdate >= speed) {
+    lastUpdate = now;
     if (currentAngle1 != targetAngle1) {
       currentAngle1 += step1;
     }
@@ -78,7 +95,5 @@ void MyServoControl::updateServo(uint16_t targetAngle1, uint16_t targetAngle2, u
 
     OCR1A = currentAngle1;
     OCR1B = currentAngle2;
-
-    delay(speed);
   }
 }
