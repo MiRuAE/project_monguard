@@ -28,7 +28,7 @@ void setup() {
   myServo.begin();
 
   face.setFace("squint");
-  myServo.positionSet();
+  myServo.positionSet(1);
 }
 
 void loop() {
@@ -95,15 +95,15 @@ void loop() {
     motorControl.setDirection(2, dir); // 우측 모터 방향 설정
 
     if (buttonA == 'A') {
-      myServo.walkForward();
+      myServo.walkForward(5);
     }
     
     if (buttonC == 'C') {
-      myServo.walkBackward();
+      myServo.walkBackward(5);
     }
 
     if (buttonD == 'D') {
-      myServo.positionSet();
+      myServo.positionSet(5);
     }
   }
 }
