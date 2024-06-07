@@ -130,10 +130,10 @@ void loop() {
       face.setFace("normal");
       myServo.Sleep(1);
       mode_count += 1;
-      
+      //delay(5000);
     }
     mpuSensor.update();
-    if (mode_count >0 && mpuSensor.isThresholdExceeded()){
+    if (mode_count >4 && mpuSensor.isThresholdExceeded()){
         //Serial.print("aaaaaaaa");
         face.setFace("wink");
         
