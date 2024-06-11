@@ -4,16 +4,16 @@ void MotorControl::init() {
   DDRC |= (1 << motor1DirAPin) | (1 << motor1DirBPin) | (1 << motor2DirAPin) | (1 << motor2DirBPin); // Set direction pins as outputs
   DDRD |= (1 << motor1EnablePin) | (1 << motor2EnablePin);                                           // Set enable pins as outputs
 
-  // Timer setup for PWM on pins 9 and 10 (adjust as needed for desired PWM frequency)
-  TCCR1A = (1 << COM1A1) | (1 << COM1B1) | (1 << WGM10); // Fast PWM, 8-bit
-  TCCR1B = (1 << CS11);                                  // Prescaler 8
+  // Timer setup for PWM on pins 5 and 6
+  TCCR0A = (1 << COM0A1) | (1 << COM0B1) | (1 << WGM00); // Fast PWM, 8-bit
+  TCCR0B = (1 << CS01);                                  // Prescaler 8
 }
 
 void MotorControl::setSpeed(int motor, int speed) {
   if (motor == 1) {
-    OCR1B = speed;
+    OCR0A = speed;
   } else if (motor == 2) {
-    OCR1A = speed;
+    OCR0B = speed;
   }
 }
 
