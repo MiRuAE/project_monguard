@@ -21,6 +21,7 @@ double UltrasonicSensor::measureDistanceCm() {
 
     double duration = pulseIn(_echoPin, HIGH);
     double duration = pulseInCustom(_echoPin, HIGH);
+    
     double cm = (duration / 2) * 0.0343;
     return cm;
   }
