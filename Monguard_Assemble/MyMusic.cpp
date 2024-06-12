@@ -17,18 +17,18 @@ void MyMusic::startMelody() {
 }
 
 void MyMusic::update() {
-  if (_melodyIndex >= 98) {
+  if (_melodyIndex >= 7) {
     noTone(_pin);
     return;
   }
 
   unsigned long currentMillis = millis();
 
-  if (currentMillis - _previousMillis >= (1000 / noteDurations[_melodyIndex]) * 1.30) {
+  if (currentMillis - _previousMillis >= (1000 / smileNoteDurations[_melodyIndex]) * 1.30) {
     _previousMillis = currentMillis;
 
-    int noteDuration = 1000 / noteDurations[_melodyIndex];
-    tone(_pin, melody[_melodyIndex], noteDuration);
+    int noteDuration = 1000 / smileNoteDurations[_melodyIndex];
+    tone(_pin, smileMelody[_melodyIndex], noteDuration);
     _melodyIndex++;
   }
 }
