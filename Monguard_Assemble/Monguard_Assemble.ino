@@ -3,11 +3,11 @@
 #include "BluetoothControl.h"
 #include "faceControl.h"
 #include "MyServoControl.h"
-//#include "MyMusic.h"
+#include "MyMusic.h"
 #include "MPU9250Library.h"
 #include "UltrasonicSensor.h"
 
-#include "MarioMusic.h"
+//#include "MarioMusic.h"
 
 //MarioMusic marioMusic;
 
@@ -33,7 +33,7 @@ UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
 MyServoControl myServo;
 MPU9250Library mpuSensor;
 
-//MyMusic music(BUZZER_PIN); //스피커
+MyMusic music(BUZZER_PIN); //스피커
 
 void setup() {
   Serial.begin(9600);
@@ -196,6 +196,7 @@ void loop() {
 
     if (buttonE == 'E') {
       myServo.positionSet(10);
+      music.playMelody();
     }
   }
 
