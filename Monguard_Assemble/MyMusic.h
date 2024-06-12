@@ -103,6 +103,7 @@ private:
   int _pin;
   int _melodyIndex;
   unsigned long _previousMillis;
+/*
   const int melody[98] = {
     NOTE_E4, NOTE_E4, NOTE_E4, NOTE_C4, NOTE_E4, NOTE_G4, NOTE_G3,
     NOTE_C4, NOTE_G3, NOTE_E3, NOTE_A3, NOTE_B3, NOTE_AS3, NOTE_A3, NOTE_G3, NOTE_E4, NOTE_G4, NOTE_A4, NOTE_F4, NOTE_G4, NOTE_E4, NOTE_C4, NOTE_D4, NOTE_B3,
@@ -122,6 +123,9 @@ private:
     8, 4, 4, 8, 4, 8, 4, 8, 2, 8, 4, 4, 8, 4, 1,
     8, 4, 4, 8, 4, 8, 4, 8, 2
   };
+  */
+  const int smileMelody[7] = {330, 330, 330, 262, 330, 392, 196};
+  const int smileNoteDurations[7] = {8, 4, 4, 8, 4, 2, 2};
 
   void startMelody();
 };
