@@ -5,7 +5,7 @@
 #include "MyServoControl.h"
 //#include "MyMusic.h"
 #include "MPU9250Library.h"
-//#include "UltrasonicSensor.h"
+#include "UltrasonicSensor.h"
 
 #include "MarioMusic.h"
 
@@ -24,10 +24,12 @@
 
 int mode_count = 0;
 
+double distance;
+
 BluetoothControl bluetoothControl(RX_PIN, TX_PIN); // BluetoothControl 객체 생성
 MotorControl motorControl; // MotorControl 객체 생성
 faceControl face(DIN, CS, CLK, NUM_MATRICES); // faceControl 객체 생성
-//UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
+UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
 MyServoControl myServo;
 MPU9250Library mpuSensor;
 
@@ -46,7 +48,7 @@ void setup() {
   myServo.positionSet(10);
 
   mpuSensor.begin(); //mpu9250 시작
-  //sensor.begin(); //초음파센서 시작
+  sensor.begin(); //초음파센서 시작
   pinMode(pinTrig, OUTPUT);
   pinMode(pinEcho, INPUT);
 
@@ -56,6 +58,8 @@ void setup() {
 void loop() {
 
   DataPacket receivedPacket; // 데이터를 받을 패킷 구조체 생성
+
+  //distance = sensor.measureDistanceCm;
 
   // 블루투스로부터 데이터를 읽음
   if (bluetoothControl.readData(receivedPacket)) {
@@ -98,7 +102,7 @@ void loop() {
     Serial.print(mode_count);
     Serial.println();
 
-    // double distance = measureDistanceCm();
+    //distance = measureDistanceCm();
     // Serial.print("Distance: ");
     // Serial.println(distance);
     
@@ -134,10 +138,10 @@ void loop() {
     }
 
     if (Mode == 'S'){ //sleep 모드 활성화
-      face.setFace("normal");
+      face.setFace("sleep");
       myServo.Sleep(1);
       mode_count += 1;
-      //delay(5000);
+      delay(50);
     }
     mpuSensor.update();
     if (mode_count >4 && mpuSensor.isThresholdExceeded()){
@@ -157,6 +161,7 @@ void loop() {
     // 버튼 B가 눌렸을 때 얼굴 표정을 랜덤으로 변경
     if (buttonB == 'B') { // 버튼 B가 눌린 상태
       int randomFace = random(6); // 0부터 4까지 랜덤 숫자 생성 (표정 5개)
+      delay(100);
       switch (randomFace) {
         case 0:
           face.setFace("normal");
@@ -165,13 +170,13 @@ void loop() {
           face.setFace("squint");
           break;
         case 2:
-          face.setFace("smile");
-          break;
-        case 3:
           face.setFace("surprised");
           break;
-        case 4:
+        case 3:
           face.setFace("wink");
+          break;
+        case 4:
+          face.setFace("sad");
           break;
         case 5:
           face.setFace("angry");
@@ -184,7 +189,9 @@ void loop() {
     }
 
     if (buttonD == 'D') {
-
+      // double distance = sensor.measureDistanceCm();
+      // Serial.print("Distance: ");
+      // Serial.println(distance);
     }
 
     if (buttonE == 'E') {

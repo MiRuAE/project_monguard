@@ -14,9 +14,12 @@ private:
   int _trigPin;
   int _echoPin;
   unsigned long _previousMillis;
-  const unsigned long _interval = 100; // 측정 간격 (ms)
+  unsigned long _interval = 100; // 측정 간격 (ms)
 
-  unsigned long pulseInCustom(uint8_t pin, uint8_t state, unsigned long timeout = 1000000L);
+  // 추가된 멤버 변수
+  bool _isMeasuring;        // 측정 상태
+  unsigned long _startMillis; // 측정 시작 시간
+  unsigned long _echoStartTime; // 에코 HIGH 시작 시간
 };
 
-#endif // ULTRASONIC_SENSOR_H
+#endif
