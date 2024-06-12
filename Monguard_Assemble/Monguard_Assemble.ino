@@ -47,7 +47,7 @@ void setup() {
   myServo.positionSet(10);
 
   mpuSensor.begin(); //mpu9250 시작
-  //sensor.begin(); //초음파센서 시작
+  sensor.begin(); //초음파센서 시작
 
 }
 
@@ -87,11 +87,11 @@ void loop() {
     Serial.print(buttonC);
     Serial.print(buttonD);
     Serial.print(buttonE);
-    // Serial.print(" Mode: ");
-    // Serial.print(Mode);
-    // Serial.print(" Distance: ");
-    // Serial.print(distance);
-    //Serial.print(" Count: ");
+    Serial.print(" Mode: ");
+    Serial.print(Mode);
+    Serial.print(" Distance: ");
+    Serial.print(distance);
+    Serial.print(" Count: ");
     Serial.print(mode_count);
     Serial.println();
     

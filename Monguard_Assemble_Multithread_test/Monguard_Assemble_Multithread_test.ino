@@ -49,6 +49,12 @@ void setup() {
 
   bluetoothQueue = xQueueCreate(10, sizeof(DataPacket)); // 블루투스 데이터 큐 생성
 
+  if (bluetoothQueue == NULL) {
+    Serial.println(F("Failed to create Bluetooth Queue."));
+  } else {
+    Serial.println(F("Bluetooth Queue created successfully."));
+  }
+
   xTaskCreate(bluetoothTask, "BluetoothTask", 128, NULL, 1, NULL); // 블루투스 태스크 생성
   xTaskCreate(motorTask, "MotorTask", 128, NULL, 1, NULL); // 모터 제어 태스크 생성
   xTaskCreate(faceTask, "FaceTask", 128, NULL, 1, NULL); // 얼굴 표정 제어 태스크 생성
@@ -63,17 +69,18 @@ void loop() {
   // FreeRTOS에서는 loop()를 사용하지 않습니다.
 }
 
-
 void bluetoothTask(void *pvParameters) {
   DataPacket receivedPacket;
   for (;;) {
     if (bluetoothControl.readData(receivedPacket)) {
+      Serial.println(F("Data received via Bluetooth."));
       xQueueSend(bluetoothQueue, &receivedPacket, portMAX_DELAY);
+    } else {
+      Serial.println(F("No data received via Bluetooth."));
     }
     vTaskDelay(100 / portTICK_PERIOD_MS);
   }
 }
-
 
 void motorTask(void *pvParameters) {
   DataPacket receivedPacket;
@@ -88,7 +95,7 @@ void motorTask(void *pvParameters) {
       motorControl.setDirection(1, dir_FB); // 좌측 모터 방향 설정
       motorControl.setDirection(2, dir_FB); // 우측 모터 방향 설정
 
-      if (V_Left > V_Right) { //좌측으로 갈때 좌측 틸팅
+      if (V_Left > V_Right) { // 좌측으로 갈 때 좌측 틸팅
         if (0 <= V_Left - V_Right && V_Left - V_Right <= 150) {
           myServo.tiltLeft(30, 1);
         } else if (151 <= V_Left - V_Right && V_Left - V_Right <= 255) {
@@ -98,7 +105,7 @@ void motorTask(void *pvParameters) {
         }
       }
 
-      if (V_Left < V_Right) { //우측으로 갈때 우측 틸팅
+      if (V_Left < V_Right) { // 우측으로 갈 때 우측 틸팅
         if (0 <= V_Right - V_Left && V_Right - V_Left <= 150) {
           myServo.tiltRight(30, 1);
         } else if (150 <= V_Right - V_Left && V_Right - V_Left <= 255) {
@@ -111,7 +118,6 @@ void motorTask(void *pvParameters) {
   }
 }
 
-
 void faceTask(void *pvParameters) {
   DataPacket receivedPacket;
   for (;;) {
@@ -119,7 +125,7 @@ void faceTask(void *pvParameters) {
       char buttonB = receivedPacket.buttons[1];
       char Mode = receivedPacket.Mode;
 
-      if (Mode == 'S') { //sleep 모드 활성화
+      if (Mode == 'S') { // sleep 모드 활성화
         face.setFace("normal");
         myServo.Sleep(1);
         mode_count += 1;
@@ -170,7 +176,6 @@ void sensorTask(void *pvParameters) {
   }
 }
 
-
 void servoTask(void *pvParameters) {
   DataPacket receivedPacket;
   for (;;) {
@@ -195,7 +200,6 @@ void servoTask(void *pvParameters) {
   }
 }
 
-
 void musicTask(void *pvParameters) {
   uint32_t notificationValue;
   for (;;) {
@@ -208,6 +212,3 @@ void musicTask(void *pvParameters) {
     }
   }
 }
-
-
-
