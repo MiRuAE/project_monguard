@@ -33,6 +33,8 @@ MPU9250Library mpuSensor;
 
 //MyMusic music(BUZZER_PIN); //스피커
 
+unsigned long previousMillis = 0;
+const unsigned long interval = 100; // 초음파 센서 측정 간격
 
 void setup() {
   Serial.begin(9600);
@@ -87,6 +89,7 @@ void loop() {
     Serial.print(buttonC);
     Serial.print(buttonD);
     Serial.print(buttonE);
+    
     Serial.print(" Mode: ");
     Serial.print(Mode);
     Serial.print(" Distance: ");
@@ -177,18 +180,14 @@ void loop() {
     }
 
     if (buttonD == 'D') {
-      //myServo.positionSet(5);
-      // distance = sensor.measureDistanceCm(); //거리
-      // int x_b = sensor.getXB(); // 초음파 아우풋 10cm 이내 값이 1 아니면 0
-      
-      // if (distance <= 10){ //초음파 10cm 이내의 물체가 발견되면 뒤로 가기
-      // motorControl.setSpeed(1, 20); // 좌측 모터 속도 설정
-      // motorControl.setSpeed(2, 20); // 우측 모터 속도 설정
-      // motorControl.setDirection(1, "B"); // 좌측 모터 방향 설정
-      // motorControl.setDirection(2, 'B');
-      // face.setFace("surprised");
-      // //delay(500);
-    //}
+      distance = sensor.measureDistanceCm(); // 거리 측정
+      if (distance <= 10) { // 초음파 10cm 이내의 물체가 발견되면 뒤로 가기
+        motorControl.setSpeed(1, 20); // 좌측 모터 속도 설정
+        motorControl.setSpeed(2, 20); // 우측 모터 속도 설정
+        motorControl.setDirection(1, 'B'); // 좌측 모터 방향 설정
+        motorControl.setDirection(2, 'B');
+        face.setFace("surprised");
+      }
     }
 
     if (buttonE == 'E') {
@@ -201,6 +200,20 @@ void loop() {
 
       // music.playCryMelody();
       // delay(200);
+    }
+  }
+}
+
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+    double distance = sensor.measureDistanceCm();
+    if (distance <= 10.0) {
+      Serial.println("Obstacle detected! Stopping.");
+      // 로봇 정지 코드 추가
+    } else {
+      Serial.println("No obstacle detected.");
+      // 로봇 이동 코드 추가
     }
   }
 }
