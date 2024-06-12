@@ -3,7 +3,7 @@
 #include "BluetoothControl.h"
 #include "faceControl.h"
 #include "MyServoControl.h"
-//#include "MyMusic.h"
+#include "MyMusic.h"
 #include "MPU9250Library.h"
 #include "UltrasonicSensor.h"
 
@@ -31,7 +31,7 @@ UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
 MyServoControl myServo;
 MPU9250Library mpuSensor;
 
-//MyMusic music(BUZZER_PIN); //스피커
+MyMusic music(BUZZER_PIN); //스피커
 
 void setup() {
   Serial.begin(9600);
@@ -133,6 +133,7 @@ void loop() {
       }
     }
 
+
     if (Mode == 'S'){ //sleep 모드 활성화
       face.setFace("sleep");
       myServo.Sleep(1);
@@ -145,6 +146,7 @@ void loop() {
         face.setFace("wink");
         
         myServo.positionSet(10);
+        music.playMelody();
         //delay(50000);
         mode_count = 0;
     }
@@ -189,10 +191,13 @@ void loop() {
     }
 
     if (buttonE == 'E') {
+      face.setFace("wink");
       myServo.positionSet(10);
+      music.playMelody();
+      // delay(2000);
     }
   }
-
+  music.update();
 }
 
   
