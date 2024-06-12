@@ -33,22 +33,6 @@ MPU9250Library mpuSensor;
 
 //MyMusic music(BUZZER_PIN); //스피커
 
-//unsigned long previousMillis = 0;
-//const unsigned long interval = 100; // 초음파 센서 측정 간격
-
-
-// double measureDistanceCm() {
-//   digitalWrite(pinTrig, LOW);
-//   delayMicroseconds(5);
-//   digitalWrite(pinTrig, HIGH);
-//   delayMicroseconds(10);
-//   digitalWrite(pinTrig, LOW);
-
-//   double duration = pulseIn(pinEcho, HIGH);
-//   double cm = (duration / 2) * 0.0343;
-//   return cm;
-// }
-
 void setup() {
   Serial.begin(9600);
   bluetoothControl.begin(9600);
@@ -200,40 +184,13 @@ void loop() {
     }
 
     if (buttonD == 'D') {
-      //distance = sensor.measureDistanceCm(); // 거리 측정
-      // if (distance <= 10) { // 초음파 10cm 이내의 물체가 발견되면 뒤로 가기
-      //   motorControl.setSpeed(1, 20); // 좌측 모터 속도 설정
-      //   motorControl.setSpeed(2, 20); // 우측 모터 속도 설정
-      //   motorControl.setDirection(1, 'B'); // 좌측 모터 방향 설정
-      //   motorControl.setDirection(2, 'B');
-      //   face.setFace("surprised");
-      // }
+
     }
 
     if (buttonE == 'E') {
       myServo.positionSet(10);
-      //marioMusic.playMelody();
-      //delay(5000);
-      // myServo.positionSet(10);
-      // music.playSmileMelody();
-      // delay(200);
-
-      // music.playCryMelody();
-      // delay(200);
     }
   }
-  // unsigned long currentMillis = millis();
-  // if (currentMillis - previousMillis >= interval) {
-  //   previousMillis = currentMillis;
-  //   double distance = sensor.measureDistanceCm();
-  //   if (distance <= 10.0) {
-  //     Serial.println("Obstacle detected! Stopping.");
-  //     // 로봇 정지 코드 추가
-  //   } else {
-  //     Serial.println("No obstacle detected.");
-  //     // 로봇 이동 코드 추가
-  //   }
-  // }
 
 }
 
