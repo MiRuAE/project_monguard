@@ -27,11 +27,19 @@ void loop() {
     switch (command) {
       case 'U':
         myServo.walkForward(1);
+
         Serial.println("Servo moving forward");
         break;
       case 'D':
         myServo.walkBackward(1);
         Serial.println("Servo moving backward");
+
+        Serial.println("Servo moving UP");
+        break;
+      case 'D':
+        myServo.walkBackward(1);
+        Serial.println("Servo moving DOWN");
+
         break;
       case 'L':
         myServo.tiltLeft(300, 1);

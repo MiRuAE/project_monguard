@@ -19,11 +19,9 @@ double UltrasonicSensor::measureDistanceCm() {
     delayMicroseconds(10);
     digitalWrite(_trigPin, LOW);
 
-<<<<<<< HEAD
     double duration = pulseIn(_echoPin, HIGH);
-=======
     double duration = pulseInCustom(_echoPin, HIGH);
->>>>>>> aebe27f9fadd6d6131cd0d97ad2c729aa72d9a7d
+    
     double cm = (duration / 2) * 0.0343;
     return cm;
   }
@@ -37,8 +35,6 @@ bool UltrasonicSensor::isObstacleDetected(double threshold) {
   }
   return false;
 }
-<<<<<<< HEAD
-=======
 
 unsigned long UltrasonicSensor::pulseInCustom(uint8_t pin, uint8_t state, unsigned long timeout) {
   // 비트 마스크와 포트를 핀 7과 8에 대해 직접 설정
@@ -83,4 +79,3 @@ unsigned long UltrasonicSensor::pulseInCustom(uint8_t pin, uint8_t state, unsign
   // Convert the reading to microseconds
   return clockCyclesToMicroseconds(width * 16);
 }
->>>>>>> aebe27f9fadd6d6131cd0d97ad2c729aa72d9a7d
