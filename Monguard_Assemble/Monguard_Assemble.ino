@@ -3,7 +3,7 @@
 #include "BluetoothControl.h"
 #include "faceControl.h"
 #include "MyServoControl.h"
-#include "MyMusic.h"
+//#include "MyMusic.h"
 #include "MPU9250Library.h"
 #include "UltrasonicSensor.h"
 
@@ -24,8 +24,6 @@
 
 int mode_count = 0;
 
-double distance;
-
 BluetoothControl bluetoothControl(RX_PIN, TX_PIN); // BluetoothControl 객체 생성
 MotorControl motorControl; // MotorControl 객체 생성
 faceControl face(DIN, CS, CLK, NUM_MATRICES); // faceControl 객체 생성
@@ -33,7 +31,7 @@ UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
 MyServoControl myServo;
 MPU9250Library mpuSensor;
 
-MyMusic music(BUZZER_PIN); //스피커
+//MyMusic music(BUZZER_PIN); //스피커
 
 void setup() {
   Serial.begin(9600);
@@ -48,7 +46,7 @@ void setup() {
   myServo.positionSet(10);
 
   mpuSensor.begin(); //mpu9250 시작
-  sensor.begin(); //초음파센서 시작
+  //sensor.begin(); //초음파센서 시작
   pinMode(pinTrig, OUTPUT);
   pinMode(pinEcho, INPUT);
 
@@ -58,8 +56,6 @@ void setup() {
 void loop() {
 
   DataPacket receivedPacket; // 데이터를 받을 패킷 구조체 생성
-
-  //distance = sensor.measureDistanceCm;
 
   // 블루투스로부터 데이터를 읽음
   if (bluetoothControl.readData(receivedPacket)) {
@@ -102,7 +98,7 @@ void loop() {
     Serial.print(mode_count);
     Serial.println();
 
-    //distance = measureDistanceCm();
+    // double distance = measureDistanceCm();
     // Serial.print("Distance: ");
     // Serial.println(distance);
     
@@ -189,14 +185,11 @@ void loop() {
     }
 
     if (buttonD == 'D') {
-      // double distance = sensor.measureDistanceCm();
-      // Serial.print("Distance: ");
-      // Serial.println(distance);
+
     }
 
     if (buttonE == 'E') {
       myServo.positionSet(10);
-      music.playMelody();
     }
   }
 
