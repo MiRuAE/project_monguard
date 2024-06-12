@@ -5,7 +5,7 @@
 #include "MyServoControl.h"
 //#include "MyMusic.h"
 #include "MPU9250Library.h"
-#include "UltrasonicSensor.h"
+//#include "UltrasonicSensor.h"
 
 #include "MarioMusic.h"
 
@@ -27,14 +27,27 @@ int mode_count = 0;
 BluetoothControl bluetoothControl(RX_PIN, TX_PIN); // BluetoothControl 객체 생성
 MotorControl motorControl; // MotorControl 객체 생성
 faceControl face(DIN, CS, CLK, NUM_MATRICES); // faceControl 객체 생성
-UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
+//UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
 MyServoControl myServo;
 MPU9250Library mpuSensor;
 
 //MyMusic music(BUZZER_PIN); //스피커
 
-unsigned long previousMillis = 0;
-const unsigned long interval = 100; // 초음파 센서 측정 간격
+//unsigned long previousMillis = 0;
+//const unsigned long interval = 100; // 초음파 센서 측정 간격
+
+
+// double measureDistanceCm() {
+//   digitalWrite(pinTrig, LOW);
+//   delayMicroseconds(5);
+//   digitalWrite(pinTrig, HIGH);
+//   delayMicroseconds(10);
+//   digitalWrite(pinTrig, LOW);
+
+//   double duration = pulseIn(pinEcho, HIGH);
+//   double cm = (duration / 2) * 0.0343;
+//   return cm;
+// }
 
 void setup() {
   Serial.begin(9600);
@@ -49,9 +62,12 @@ void setup() {
   myServo.positionSet(10);
 
   mpuSensor.begin(); //mpu9250 시작
-  sensor.begin(); //초음파센서 시작
+  //sensor.begin(); //초음파센서 시작
+  pinMode(pinTrig, OUTPUT);
+  pinMode(pinEcho, INPUT);
 
 }
+
 
 void loop() {
 
@@ -73,7 +89,7 @@ void loop() {
     char buttonD = receivedPacket.buttons[3];
     char buttonE = receivedPacket.buttons[4];
 
-    double distance;
+    //double distance;
 
     // 읽은 데이터 출력
     Serial.print("Received Dir: ");
@@ -92,11 +108,15 @@ void loop() {
     
     Serial.print(" Mode: ");
     Serial.print(Mode);
-    Serial.print(" Distance: ");
-    Serial.print(distance);
+    //Serial.print(" Distance: ");
+    //Serial.print(distance);
     Serial.print(" Count: ");
     Serial.print(mode_count);
     Serial.println();
+
+    // double distance = measureDistanceCm();
+    // Serial.print("Distance: ");
+    // Serial.println(distance);
     
 
     // 모터 제어 함수 호출
@@ -180,14 +200,14 @@ void loop() {
     }
 
     if (buttonD == 'D') {
-      distance = sensor.measureDistanceCm(); // 거리 측정
-      if (distance <= 10) { // 초음파 10cm 이내의 물체가 발견되면 뒤로 가기
-        motorControl.setSpeed(1, 20); // 좌측 모터 속도 설정
-        motorControl.setSpeed(2, 20); // 우측 모터 속도 설정
-        motorControl.setDirection(1, 'B'); // 좌측 모터 방향 설정
-        motorControl.setDirection(2, 'B');
-        face.setFace("surprised");
-      }
+      //distance = sensor.measureDistanceCm(); // 거리 측정
+      // if (distance <= 10) { // 초음파 10cm 이내의 물체가 발견되면 뒤로 가기
+      //   motorControl.setSpeed(1, 20); // 좌측 모터 속도 설정
+      //   motorControl.setSpeed(2, 20); // 우측 모터 속도 설정
+      //   motorControl.setDirection(1, 'B'); // 좌측 모터 방향 설정
+      //   motorControl.setDirection(2, 'B');
+      //   face.setFace("surprised");
+      // }
     }
 
     if (buttonE == 'E') {
@@ -202,18 +222,19 @@ void loop() {
       // delay(200);
     }
   }
+  // unsigned long currentMillis = millis();
+  // if (currentMillis - previousMillis >= interval) {
+  //   previousMillis = currentMillis;
+  //   double distance = sensor.measureDistanceCm();
+  //   if (distance <= 10.0) {
+  //     Serial.println("Obstacle detected! Stopping.");
+  //     // 로봇 정지 코드 추가
+  //   } else {
+  //     Serial.println("No obstacle detected.");
+  //     // 로봇 이동 코드 추가
+  //   }
+  // }
+
 }
 
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
-    double distance = sensor.measureDistanceCm();
-    if (distance <= 10.0) {
-      Serial.println("Obstacle detected! Stopping.");
-      // 로봇 정지 코드 추가
-    } else {
-      Serial.println("No obstacle detected.");
-      // 로봇 이동 코드 추가
-    }
-  }
-}
+  

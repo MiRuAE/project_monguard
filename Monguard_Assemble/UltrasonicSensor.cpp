@@ -20,7 +20,6 @@ double UltrasonicSensor::measureDistanceCm() {
     digitalWrite(_trigPin, LOW);
 
     double duration = pulseIn(_echoPin, HIGH);
-    double duration = pulseInCustom(_echoPin, HIGH);
     double cm = (duration / 2) * 0.0343;
     return cm;
   }
@@ -33,48 +32,4 @@ bool UltrasonicSensor::isObstacleDetected(double threshold) {
     return distance <= threshold;
   }
   return false;
-}
-
-unsigned long UltrasonicSensor::pulseInCustom(uint8_t pin, uint8_t state, unsigned long timeout) {
-  // 비트 마스크와 포트를 핀 7과 8에 대해 직접 설정
-  uint8_t bit, port;
-  if (pin == 7) {
-    bit = _BV(PD7);  // Pin 7 is bit 7 on port D
-    port = PIND;
-  } else if (pin == 8) {
-    bit = _BV(PB0);  // Pin 8 is bit 0 on port B
-    port = PINB;
-  } else {
-    return 0;  // 지원되지 않는 핀에 대해 0을 반환
-  }
-
-  uint8_t stateMask = (state ? bit : 0);
-  unsigned long width = 0;
-  unsigned long numloops = 0;
-  unsigned long maxloops = microsecondsToClockCycles(timeout) / 16;
-
-  // Wait for any previous pulse to end
-  while ((port & bit) == stateMask) {
-    if (numloops++ == maxloops) {
-      return 0;
-    }
-  }
-
-  // Wait for the pulse to start
-  while ((port & bit) != stateMask) {
-    if (numloops++ == maxloops) {
-      return 0;
-    }
-  }
-
-  // Wait for the pulse to stop
-  while ((port & bit) == stateMask) {
-    if (numloops++ == maxloops) {
-      return 0;
-    }
-    width++;
-  }
-
-  // Convert the reading to microseconds
-  return clockCyclesToMicroseconds(width * 16);
 }
