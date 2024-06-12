@@ -217,7 +217,7 @@ void loop() {
       // myServo.positionSet(10);
       // music.playSmileMelody();
       // delay(200);
-
+      music.playMelody();
       // music.playCryMelody();
       // delay(200);
     }
