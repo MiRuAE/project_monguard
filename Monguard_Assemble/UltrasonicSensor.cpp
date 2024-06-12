@@ -19,6 +19,7 @@ double UltrasonicSensor::measureDistanceCm() {
     delayMicroseconds(10);
     digitalWrite(_trigPin, LOW);
 
+    double duration = pulseIn(_echoPin, HIGH);
     double duration = pulseInCustom(_echoPin, HIGH);
     double cm = (duration / 2) * 0.0343;
     return cm;
