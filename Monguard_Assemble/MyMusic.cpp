@@ -12,6 +12,7 @@ void MyMusic::playMelody(const int melody[], const int noteDurations[], int leng
     int pauseBetweenNotes = noteDuration * 1.30;
     delay(pauseBetweenNotes);
     noTone(_pin);
+
   }
   delay(1200);
 }
