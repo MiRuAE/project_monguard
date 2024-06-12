@@ -29,7 +29,6 @@ private:
   static const uint8_t sadEyes[8];
   static const uint8_t angryEyesLeft[8];
   static const uint8_t angryEyesRight[8];
-  static const uint8_t crossEyes[8];
 
   static const uint8_t smileMouth1[8];
   static const uint8_t smileMouth2[8];
@@ -41,8 +40,6 @@ private:
   static const uint8_t winkMouth2[8];
   static const uint8_t sadMouth1[8];
   static const uint8_t sadMouth2[8];
-  static const uint8_t sleepMouth1[8];
-  static const uint8_t sleepMouth2[8];
 
   void write_Max7219(uint8_t matrix, uint8_t address, uint8_t data);
   void write_byte(uint8_t data);
@@ -52,7 +49,6 @@ private:
   void winkface();
   void sadface();
   void angryface();
-  void sleepface();
 };
 
 #endif

@@ -116,8 +116,8 @@ void loop() {
     V_Right = speed;
   }
 
-  V_Left = constrain(V_Left, 0, 220);
-  V_Right = constrain(V_Right, 0, 220);
+  V_Left = constrain(V_Left, 0, 200);
+  V_Right = constrain(V_Right, 0, 200);
 
   // Read button states using PIND and PINB registers and format into a single byte
   char buttons[5] = {'0', '0', '0', '0', '0'}; // Increased to accommodate Button E

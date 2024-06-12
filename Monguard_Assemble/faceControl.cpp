@@ -100,17 +100,6 @@ const uint8_t faceControl::sadEyes[8] = {
     0b00000000
 };
 
-const uint8_t faceControl::crossEyes[8]= {
-    0b10000001,
-    0b01000010,
-    0b00100100,
-    0b00011000,
-    0b00011000,
-    0b00100100,
-    0b01000010,
-    0b10000001
-};
-
 const uint8_t faceControl::smileMouth2[8] = {
     0b00000000,
     0b00000000,
@@ -221,28 +210,6 @@ const uint8_t faceControl::sadMouth2[8] = {
     0b00000000
 };
 
-const uint8_t faceControl::sleepMouth1[8] = {
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b00000011,
-    0b00000100,
-    0b00001001,
-    0b00000110,
-    0b00000000
-};
-
-const uint8_t faceControl::sleepMouth2[8] = {
-    0b00000000,
-    0b00000000,
-    0b00000000,
-    0b11000000,
-    0b00100000,
-    0b10010000,
-    0b01111000,
-    0b00011000
-};
-
 faceControl::faceControl(uint8_t DIN, uint8_t CS, uint8_t CLK, uint8_t NUM_MATRICES)
     : _DIN(DIN), _CS(CS), _CLK(CLK), _NUM_MATRICES(NUM_MATRICES) {}
 
@@ -284,9 +251,7 @@ void faceControl::setFace(String expression) {
         sadface();
     } else if (expression == "angry") {
         angryface();
-    } else if (expression == "sleep") {
-        sleepface();
-    } else {
+    }else {
         clearDisplay();
     }
 
@@ -353,7 +318,7 @@ void faceControl::winkface() {
         write_Max7219(3, row + 1, winkRight[row]);
     }
     
-    delay(100);
+    //delay(100);
 
     for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
         write_Max7219(0, row + 1, winkRight[row]);
@@ -362,7 +327,7 @@ void faceControl::winkface() {
         write_Max7219(3, row + 1, winkRight[row]);
     }
 
-    delay(100);
+    //delay(100);
 
     for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
         write_Max7219(0, row + 1, winkLeft[row]);
@@ -371,7 +336,7 @@ void faceControl::winkface() {
         write_Max7219(3, row + 1, winkRight[row]);
     }
     
-    delay(100);
+    //delay(100);
 
     for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
         write_Max7219(0, row + 1, winkRight[row]);
@@ -380,7 +345,7 @@ void faceControl::winkface() {
         write_Max7219(3, row + 1, winkRight[row]);
     }
 
-    delay(100);
+    //delay(100);
 
     for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
         write_Max7219(0, row + 1, winkLeft[row]);
@@ -389,7 +354,7 @@ void faceControl::winkface() {
         write_Max7219(3, row + 1, winkRight[row]);
     }
     
-    delay(100);
+    //delay(100);
 
     for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
         write_Max7219(0, row + 1, winkRight[row]);
@@ -414,14 +379,5 @@ void faceControl::angryface() {
         write_Max7219(1, row + 1, flatMouth1[row]);
         write_Max7219(2, row + 1, flatMouth2[row]);
         write_Max7219(3, row + 1, angryEyesRight[row]);
-    }
-}
-
-void faceControl::sleepface() {
-    for(uint8_t row = 0; row < NUMBER_OF_ROWS; row++) {
-        write_Max7219(0, row + 1, crossEyes[row]);
-        write_Max7219(1, row + 1, sleepMouth1[row]);
-        write_Max7219(2, row + 1, sleepMouth2[row]);
-        write_Max7219(3, row + 1, crossEyes[row]);
     }
 }
