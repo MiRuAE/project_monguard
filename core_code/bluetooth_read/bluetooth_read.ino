@@ -1,10 +1,12 @@
+// CURRENT SLAVE: 98d3,11,fc3cd1
+// AT+BIND=98d3,11,fc3cd1
 #include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(12, 13); // TX=2, RX=3 BLUETOOTH MODULE
+SoftwareSerial mySerial(13, 12); // TX=2, RX=3 BLUETOOTH MODULE
 
 void setup() {
   Serial.begin(9600);       // 시리얼 통신 시작, 전송 속도 9600
-  mySerial.begin(9600);    // 블루투스 시리얼 통신 시작, 전송 속도 9600
+  mySerial.begin(38400);    // 블루투스 시리얼 통신 시작, 전송 속도 9600
 
   Serial.println("Enter AT commands:");
 }

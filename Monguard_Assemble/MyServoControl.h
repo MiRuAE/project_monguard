@@ -19,7 +19,7 @@ public:
 
 private:
   const uint16_t NEUTRAL1 = 3925;
-  const uint16_t NEUTRAL2 = 2375;
+  const uint16_t NEUTRAL2 = 2280;
   const uint16_t ANGLE_RANGE = 200;
 
   uint16_t currentAngle1;

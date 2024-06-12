@@ -25,7 +25,7 @@ void MyMusic::update() {
   unsigned long currentMillis = millis();
   
   // 원래 코드의 기본 템포 (밀리초 단위로 4분음표의 지속 시간)
-  int tempo = 250; // 125 밀리초 = 원래의 빠른 속도
+  int tempo = 150; // 125 밀리초 = 원래의 빠른 속도
   
   // 현재 음의 지속 시간 계산
   int noteDuration = tempo * (8.0 / smileNoteDurations[_melodyIndex]);

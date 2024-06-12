@@ -1,3 +1,4 @@
+// 98d3:11:fc3cd1
 #include <SoftwareSerial.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -22,7 +23,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 //int sleep_count = 0; // check sleep mode
 
-SoftwareSerial mySerial(11, 12); // TX=11, RX=12 BLUETOOTH MODULE
+SoftwareSerial mySerial(13, 12); // TX=11, RX=12 BLUETOOTH MODULE
 
 void init_ADC() {
   ADMUX |= (0 << REFS1) | (1 << REFS0); // AVcc reference
