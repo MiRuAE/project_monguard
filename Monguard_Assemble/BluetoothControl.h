@@ -4,11 +4,12 @@
 #include <SoftwareSerial.h>
 
 struct DataPacket {
-  char DIR_FB;
+  char DIR_FBL;
+  char DIR_FBR;
   char DIR_LR;
   int V_Left;
   int V_Right;
-  char buttons[5];
+  char buttons[5]; // Buttons A, B, C, D, E
 };
 
 class BluetoothControl {

@@ -6,6 +6,11 @@
 #include "MyMusic.h"
 #include "MPU9250Library.h"
 
+//#include "UltrasonicSensor.h"
+//#include "MarioMusic.h"
+//MarioMusic marioMusic;
+
+
 #define RX_PIN 12
 #define TX_PIN 13
 #define DIN 2
@@ -13,10 +18,18 @@
 #define CLK 4
 #define NUM_MATRICES 4
 #define NUMBER_OF_ROWS 8
+#define pinTrig 8
+#define pinEcho 7
+#define BUZZER_PIN 11
+
+int mode_count = 0;
+
 
 BluetoothControl bluetoothControl(RX_PIN, TX_PIN); // BluetoothControl 객체 생성
 MotorControl motorControl; // MotorControl 객체 생성
 faceControl face(DIN, CS, CLK, NUM_MATRICES); // faceControl 객체 생성
+
+//UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
 MyServoControl myServo;
 MPU9250Library mpuSensor;
 int count = 0; //sleep mode용 카운트
@@ -33,6 +46,12 @@ void setup() {
   face.setFace("squint");
   myServo.positionSet(10);
 
+
+  mpuSensor.begin(); //mpu9250 시작
+  //sensor.begin(); //초음파센서 시작
+  pinMode(pinTrig, OUTPUT);
+  pinMode(pinEcho, INPUT);
+
 }
 
 void loop() {
@@ -43,7 +62,8 @@ void loop() {
     // 데이터를 성공적으로 읽었을 때만 아래 코드 실행
 
     // 데이터 패킷에서 정보 추출
-    char dir_FB = receivedPacket.DIR_FB;
+    char dir_FBL = receivedPacket.DIR_FBL;
+    char dir_FBR = receivedPacket.DIR_FBR;
     char dir_LR = receivedPacket.DIR_LR;
     int V_Left = receivedPacket.V_Left;
     int V_Right = receivedPacket.V_Right;
@@ -54,8 +74,11 @@ void loop() {
     char buttonE = receivedPacket.buttons[4];
 
     // 읽은 데이터 출력
-    //Serial.print("Received Dir: ");
-    Serial.print(dir_FB);
+    Serial.print("Received DirFBL: ");
+    Serial.print(dir_FBL);
+    Serial.print(" Received DirFBR: ");
+    Serial.print(dir_FBR);
+    Serial.print(" Received DirLR: ");
     Serial.print(dir_LR);
     Serial.print(" V_Left: ");
     Serial.print(V_Left);
@@ -68,6 +91,11 @@ void loop() {
     Serial.print(buttonD);
     Serial.print(buttonE);
     Serial.println();
+    
+    // double distance = measureDistanceCm();
+    // Serial.print("Distance: ");
+    // Serial.println(distance);
+
     
     // 버튼 B가 눌렸을 때 얼굴 표정을 랜덤으로 변경
     if (buttonB == 'B') { // 버튼 B가 눌린 상태
@@ -97,8 +125,8 @@ void loop() {
     // 모터 제어 함수 호출
     motorControl.setSpeed(1, V_Left); // 좌측 모터 속도 설정
     motorControl.setSpeed(2, V_Right); // 우측 모터 속도 설정
-    motorControl.setDirection(1, dir_FB); // 좌측 모터 방향 설정
-    motorControl.setDirection(2, dir_FB); // 우측 모터 방향 설정
+    motorControl.setDirection(1, dir_FBL); // 좌측 모터 방향 설정
+    motorControl.setDirection(2, dir_FBR); // 우측 모터 방향 설정
     
     if (V_Left>V_Right){ //좌측으로 갈때 좌측 틸팅
       if (0 <= V_Left - V_Right && V_Left - V_Right <= 51) {
@@ -136,22 +164,30 @@ void loop() {
       }
     }
 
-    if (V_Left <V_Right){ //우측으로 갈때 우측 틸팅
-      if (0 <= V_Right - V_Left && V_Right - V_Left <= 51) {
-        myServo.tiltRight(60, 1);
-      }
-      if (52 <= V_Right - V_Left && V_Right - V_Left <= 103) {
-        myServo.tiltRight(120, 1);
-      }
-      if (104 <= V_Right - V_Left && V_Right - V_Left <= 155) {
-        myServo.tiltRight(180, 1);
-      }
-      if (156 <= V_Right - V_Left && V_Right - V_Left <= 207) {
-        myServo.tiltRight(240, 1);
-      }
-      else {
-        myServo.tiltRight(300, 1);
-      }
+    if (dir_FBL != dir_FBR) {
+      face.setFace("surprised");
+      delay(100);
+      face.setFace("normal");
+      delay(200);
+    }
+
+
+    if (Mode == 'S'){ //sleep 모드 활성화
+      face.setFace("sleep");
+      myServo.Sleep(1);
+      mode_count += 1;
+      delay(50);
+    }
+    mpuSensor.update();
+    if (mode_count >4 && mpuSensor.isThresholdExceeded()){
+        //Serial.print("aaaaaaaa");
+        face.setFace("wink");
+        
+        myServo.positionSet(10);
+        music.playMelody();
+        //delay(50000);
+        mode_count = 0;
+
     }
 
     if (V_Left == 'N' && V_Right == 'N' && dir_FB == 'N'){ //sleep 모드 활성화
@@ -181,7 +217,17 @@ void loop() {
     }
 
     if (buttonD == 'D') {
-      myServo.positionSet(5);
+
+    }
+
+    if (buttonE == 'E') {
+      face.setFace("wink");
+      myServo.positionSet(10);
+      music.playMelody();
+      // delay(2000);
     }
   }
+  music.update();
 }
+
+
