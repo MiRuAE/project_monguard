@@ -28,10 +28,15 @@ int mode_count = 0;
 BluetoothControl bluetoothControl(RX_PIN, TX_PIN); // BluetoothControl 객체 생성
 MotorControl motorControl; // MotorControl 객체 생성
 faceControl face(DIN, CS, CLK, NUM_MATRICES); // faceControl 객체 생성
+<<<<<<< Updated upstream
 
 //UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
 MyServoControl myServo;
 MPU9250Library mpuSensor;
+=======
+MyServoControl myServo; //MyServoControl 객체 생성
+MPU9250Library mpuSensor; //MPU9250Library 객체 생성
+>>>>>>> Stashed changes
 int count = 0; //sleep mode용 카운트
 
 void setup() {
