@@ -62,7 +62,8 @@ void loop() {
     // 데이터를 성공적으로 읽었을 때만 아래 코드 실행
 
     // 데이터 패킷에서 정보 추출
-    char dir_FB = receivedPacket.DIR_FB;
+    char dir_FBL = receivedPacket.DIR_FBL;
+    char dir_FBR = receivedPacket.DIR_FBR;
     char dir_LR = receivedPacket.DIR_LR;
     char Mode = receivedPacket.Mode;
     int V_Left = receivedPacket.V_Left;
@@ -76,8 +77,11 @@ void loop() {
     //double distance;
 
     // 읽은 데이터 출력
-    Serial.print("Received Dir: ");
-    Serial.print(dir_FB);
+    Serial.print("Received DirFBL: ");
+    Serial.print(dir_FBL);
+    Serial.print(" Received DirFBR: ");
+    Serial.print(dir_FBR);
+    Serial.print(" Received DirLR: ");
     Serial.print(dir_LR);
     Serial.print(" V_Left: ");
     Serial.print(V_Left);
@@ -106,8 +110,8 @@ void loop() {
     // 모터 제어 함수 호출
     motorControl.setSpeed(1, V_Left); // 좌측 모터 속도 설정
     motorControl.setSpeed(2, V_Right); // 우측 모터 속도 설정
-    motorControl.setDirection(1, dir_FB); // 좌측 모터 방향 설정
-    motorControl.setDirection(2, dir_FB); // 우측 모터 방향 설정
+    motorControl.setDirection(1, dir_FBL); // 좌측 모터 방향 설정
+    motorControl.setDirection(2, dir_FBR); // 우측 모터 방향 설정
     
     if (V_Left>V_Right){ //좌측으로 갈때 좌측 틸팅
       if (0 <= V_Left - V_Right && V_Left - V_Right <= 150) {
@@ -131,6 +135,13 @@ void loop() {
       else {
         myServo.tiltRight(0, 1);
       }
+    }
+
+    if (dir_FBL != dir_FBR) {
+      face.setFace("surprised");
+      delay(100);
+      face.setFace("normal");
+      delay(200);
     }
 
 
