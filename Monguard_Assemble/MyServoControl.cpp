@@ -34,10 +34,6 @@ void MyServoControl::walkBackward(uint16_t speed) {
   updateServo(NEUTRAL1 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE, speed);
 }
 
-void MyServoControl::Sleep(uint16_t speed) {
-  updateServo(NEUTRAL1 - ANGLE_RANGE-300, NEUTRAL2 + ANGLE_RANGE+300, speed);
-}
-
 void MyServoControl::increaseAngle(uint16_t value, uint16_t speed) {
   updateServo(constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE),
               constrain(currentAngle2 + value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE),

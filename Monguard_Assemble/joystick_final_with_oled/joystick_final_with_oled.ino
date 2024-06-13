@@ -20,8 +20,6 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define X_CHANNEL 0x00 // ADC0
 #define Y_CHANNEL 0x01 // ADC1
 
-//int sleep_count = 0; // check sleep mode
-
 SoftwareSerial mySerial(11, 12); // TX=11, RX=12 BLUETOOTH MODULE
 
 void init_ADC() {
@@ -42,7 +40,6 @@ int read_ADC(uint8_t channel) {
 struct DataPacket {
   char DIR_FB;
   char DIR_LR;
-  char Mode;
   int V_Left;
   int V_Right;
   char buttons[5]; // Increased to accommodate Button E
@@ -80,22 +77,21 @@ void loop() {
 
   int steer = map(X, 0, 1023, -255, 255); // Steering split
   int speed;
-  char mode;
   char dir_FB;
   char dir_LR;
 
-  if (Y > 508) { 
+  if (Y > 510) { 
     dir_FB = 'F'; // Front
-    speed = map(Y, 508, 1023, 0, 255);
-  } else if (Y < 503) {
+    speed = map(Y, 506, 1023, 0, 255);
+  } else if (Y < 500) {
     dir_FB = 'B'; // Back
-    speed = map(Y, 0, 503, 255, 0);
+    speed = map(Y, 0, 506, 255, 0);
   } else {
     dir_FB = 'N'; // Neutral
     speed = 0;
   }
 
-  if (X > 506) {
+  if (X > 510) {
     dir_LR = 'R'; // Right
   } else if (X < 500) {
     dir_LR = 'L'; // Left
@@ -116,8 +112,8 @@ void loop() {
     V_Right = speed;
   }
 
-  V_Left = constrain(V_Left, 0, 200);
-  V_Right = constrain(V_Right, 0, 200);
+  V_Left = constrain(V_Left, 0, 255);
+  V_Right = constrain(V_Right, 0, 255);
 
   // Read button states using PIND and PINB registers and format into a single byte
   char buttons[5] = {'0', '0', '0', '0', '0'}; // Increased to accommodate Button E
@@ -137,23 +133,10 @@ void loop() {
     buttons[4] = 'E';
   }
 
-  if(!(PIND & PORTD_BUTTON_D)) {
-    mode = 'S'; // Sleep mode
-    // sleep_count += 1;
-    // if(sleep_count == 30) {
-    //   mode = 'S'; // Sleep mode
-    //   //sleep_count = 0;
-    // }
-  } else {
-    mode = 'W'; // Awake mode
-    //sleep_count = 0;
-  }
-
   // Send data packet: [dir_FB, dir_LR, V_Left, V_Right, buttonState]
   DataPacket dataPacket;
   dataPacket.DIR_FB = dir_FB;
   dataPacket.DIR_LR = dir_LR;
-  dataPacket.Mode = mode;
   dataPacket.V_Left = V_Left;
   dataPacket.V_Right = V_Right;
   dataPacket.buttons[0] = buttons[0];
@@ -175,9 +158,7 @@ void loop() {
   Serial.print(" V_Right: ");
   Serial.print(V_Right);
   Serial.print(" Buttons: ");
-  Serial.print(buttons);
-  Serial.print(" Sleep: ");
-  Serial.println(mode);
+  Serial.println(buttons);
 
   // Display information on OLED
   display.clearDisplay();
@@ -192,33 +173,36 @@ void loop() {
     fullDir_FB = "Stop";
   }
   
-  display.setCursor(0, 0); // 커서위치 지정
-
-  if(mode == 'W') {
-    // Print only pressed buttons
-    display.setTextSize(1);
-    //display.println("Direction: ");
-    //display.print(fullDir_FB);
-    display.setTextSize(2);
-    display.print(fullDir_FB);
-    display.println(dir_LR);
-    display.setTextSize(1);
-    display.print("V_Left: ");
-    display.println(V_Left);
-    display.print("V_Right: ");
-    display.println(V_Right);
-    display.println("Buttons: ");
-
-    // Check and print pressed buttons
-    for (int i = 0; i < 5; i++) {
-      if (buttons[i] != '0') {
-        display.setTextSize(2);
-        display.print(buttons[i]);
-      }
-    }
+  String fullDir_LR;
+  if (dir_LR == 'L') {
+    fullDir_LR = "Left";
+  } else if (dir_LR == 'R') {
+    fullDir_LR = "Right";
   } else {
-    display.setTextSize(2);
-    display.println("Sleep Mode");
+    fullDir_LR = "Stop";
+  }
+
+  // Print only pressed buttons
+  display.setTextSize(1);
+  display.setCursor(0, 0);
+  //display.println("Direction: ");
+  //display.print(fullDir_FB);
+  display.setTextSize(2);
+  display.print(fullDir_FB);
+  display.println(dir_LR);
+  display.setTextSize(1);
+  display.print("V_Left: ");
+  display.println(V_Left);
+  display.print("V_Right: ");
+  display.println(V_Right);
+  display.println("Buttons: ");
+
+  // Check and print pressed buttons
+  for (int i = 0; i < 5; i++) {
+    if (buttons[i] != '0') {
+      display.setTextSize(2);
+      display.print(buttons[i]);
+    }
   }
   
 
