@@ -5,7 +5,7 @@
 #include "MyServoControl.h"
 #include "MyMusic.h"
 #include "MPU9250Library.h"
-#include "UltrasonicSensor.h"
+//#include "UltrasonicSensor.h"
 
 //#include "MarioMusic.h"
 
@@ -27,7 +27,7 @@ int mode_count = 0;
 BluetoothControl bluetoothControl(RX_PIN, TX_PIN); // BluetoothControl 객체 생성
 MotorControl motorControl; // MotorControl 객체 생성
 faceControl face(DIN, CS, CLK, NUM_MATRICES); // faceControl 객체 생성
-UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
+//UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
 MyServoControl myServo;
 MPU9250Library mpuSensor;
 
