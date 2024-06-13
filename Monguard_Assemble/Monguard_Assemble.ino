@@ -5,11 +5,11 @@
 #include "MyServoControl.h"
 #include "MyMusic.h"
 #include "MPU9250Library.h"
+
 //#include "UltrasonicSensor.h"
-
 //#include "MarioMusic.h"
-
 //MarioMusic marioMusic;
+
 
 #define RX_PIN 12
 #define TX_PIN 13
@@ -24,14 +24,15 @@
 
 int mode_count = 0;
 
+
 BluetoothControl bluetoothControl(RX_PIN, TX_PIN); // BluetoothControl 객체 생성
 MotorControl motorControl; // MotorControl 객체 생성
 faceControl face(DIN, CS, CLK, NUM_MATRICES); // faceControl 객체 생성
+
 //UltrasonicSensor sensor(pinTrig, pinEcho); // 초음파 센서
 MyServoControl myServo;
 MPU9250Library mpuSensor;
-
-MyMusic music(BUZZER_PIN); //스피커
+int count = 0; //sleep mode용 카운트
 
 void setup() {
   Serial.begin(9600);
@@ -45,6 +46,7 @@ void setup() {
   face.setFace("squint");
   myServo.positionSet(10);
 
+
   mpuSensor.begin(); //mpu9250 시작
   //sensor.begin(); //초음파센서 시작
   pinMode(pinTrig, OUTPUT);
@@ -52,9 +54,7 @@ void setup() {
 
 }
 
-
 void loop() {
-
   DataPacket receivedPacket; // 데이터를 받을 패킷 구조체 생성
 
   // 블루투스로부터 데이터를 읽음
@@ -65,7 +65,6 @@ void loop() {
     char dir_FBL = receivedPacket.DIR_FBL;
     char dir_FBR = receivedPacket.DIR_FBR;
     char dir_LR = receivedPacket.DIR_LR;
-    char Mode = receivedPacket.Mode;
     int V_Left = receivedPacket.V_Left;
     int V_Right = receivedPacket.V_Right;
     char buttonA = receivedPacket.buttons[0];
@@ -73,8 +72,6 @@ void loop() {
     char buttonC = receivedPacket.buttons[2];
     char buttonD = receivedPacket.buttons[3];
     char buttonE = receivedPacket.buttons[4];
-
-    //double distance;
 
     // 읽은 데이터 출력
     Serial.print("Received DirFBL: ");
@@ -93,19 +90,37 @@ void loop() {
     Serial.print(buttonC);
     Serial.print(buttonD);
     Serial.print(buttonE);
-    
-    Serial.print(" Mode: ");
-    Serial.print(Mode);
-    //Serial.print(" Distance: ");
-    //Serial.print(distance);
-    Serial.print(" Count: ");
-    Serial.print(mode_count);
     Serial.println();
-
+    
     // double distance = measureDistanceCm();
     // Serial.print("Distance: ");
     // Serial.println(distance);
+
     
+    // 버튼 B가 눌렸을 때 얼굴 표정을 랜덤으로 변경
+    if (buttonB == 'B') { // 버튼 B가 눌린 상태
+      int randomFace = random(6); // 0부터 4까지 랜덤 숫자 생성 (표정 5개)
+      switch (randomFace) {
+        case 0:
+          face.setFace("normal");
+          break;
+        case 1:
+          face.setFace("squint");
+          break;
+        case 2:
+          face.setFace("smile");
+          break;
+        case 3:
+          face.setFace("surprised");
+          break;
+        case 4:
+          face.setFace("wink");
+          break;
+        case 5:
+          face.setFace("angry");
+          break;
+      }
+    }
 
     // 모터 제어 함수 호출
     motorControl.setSpeed(1, V_Left); // 좌측 모터 속도 설정
@@ -114,26 +129,38 @@ void loop() {
     motorControl.setDirection(2, dir_FBR); // 우측 모터 방향 설정
     
     if (V_Left>V_Right){ //좌측으로 갈때 좌측 틸팅
-      if (0 <= V_Left - V_Right && V_Left - V_Right <= 150) {
-        myServo.tiltLeft(30 , 1);
+      if (0 <= V_Left - V_Right && V_Left - V_Right <= 51) {
+        myServo.tiltLeft(60, 1);
       }
-      if (151 <= V_Left - V_Right && V_Left - V_Right <= 255) {
-        myServo.tiltLeft(100, 1);
+      if (52 <= V_Left - V_Right && V_Left - V_Right <= 103) {
+        myServo.tiltLeft(120, 1);
+      }
+      if (104 <= V_Left - V_Right && V_Left - V_Right <= 155) {
+        myServo.tiltLeft(180, 1);
+      }
+      if (156 <= V_Left - V_Right && V_Left - V_Right <= 207) {
+        myServo.tiltLeft(240, 1);
       }
       else {
-        myServo.tiltLeft(0, 1);
+        myServo.tiltLeft(300, 1);
       }
     }
 
     if (V_Left <V_Right){ //우측으로 갈때 우측 틸팅
-      if (0 <= V_Right - V_Left && V_Right - V_Left <= 150) {
-        myServo.tiltRight(30, 1);
+      if (0 <= V_Right - V_Left && V_Right - V_Left <= 51) {
+        myServo.tiltRight(60, 1);
       }
-      if (150 <= V_Right - V_Left && V_Right - V_Left <= 255) {
-        myServo.tiltRight(100, 1);
+      if (52 <= V_Right - V_Left && V_Right - V_Left <= 103) {
+        myServo.tiltRight(120, 1);
+      }
+      if (104 <= V_Right - V_Left && V_Right - V_Left <= 155) {
+        myServo.tiltRight(180, 1);
+      }
+      if (156 <= V_Right - V_Left && V_Right - V_Left <= 207) {
+        myServo.tiltRight(240, 1);
       }
       else {
-        myServo.tiltRight(0, 1);
+        myServo.tiltRight(300, 1);
       }
     }
 
@@ -160,37 +187,29 @@ void loop() {
         music.playMelody();
         //delay(50000);
         mode_count = 0;
+
     }
 
+    if (V_Left == 'N' && V_Right == 'N' && dir_FB == 'N'){ //sleep 모드 활성화
+      count += 1;
+      delay(500);
+      if (count == 10){
+        mpuSensor.update();
+        face.setFace("normal");
+        if (mpuSensor.isThresholdExceeded()){
+          return 0;
+        }
+      else {
+        return 0;
+      }
+      }
+    else {
+      return 0;
+    }
+    }
 
     if (buttonA == 'A') {
       myServo.walkForward(5);
-    }
-
-    // 버튼 B가 눌렸을 때 얼굴 표정을 랜덤으로 변경
-    if (buttonB == 'B') { // 버튼 B가 눌린 상태
-      int randomFace = random(6); // 0부터 4까지 랜덤 숫자 생성 (표정 5개)
-      delay(100);
-      switch (randomFace) {
-        case 0:
-          face.setFace("normal");
-          break;
-        case 1:
-          face.setFace("squint");
-          break;
-        case 2:
-          face.setFace("surprised");
-          break;
-        case 3:
-          face.setFace("wink");
-          break;
-        case 4:
-          face.setFace("sad");
-          break;
-        case 5:
-          face.setFace("angry");
-          break;
-      }
     }
     
     if (buttonC == 'C') {
@@ -211,4 +230,4 @@ void loop() {
   music.update();
 }
 
-  
+

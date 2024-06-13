@@ -7,7 +7,6 @@ struct DataPacket {
   char DIR_FBL;
   char DIR_FBR;
   char DIR_LR;
-  char Mode;
   int V_Left;
   int V_Right;
   char buttons[5]; // Buttons A, B, C, D, E
