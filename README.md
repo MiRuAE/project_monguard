@@ -1,9 +1,13 @@
+![header](https://capsule-render.vercel.app/api?type=waving&text=MongGuard&animation=scaleIn&color=timeAuto)
+
 # project_monguard
->Two Wheeled Balancing Robot Project / Jisang, Giyong, Minwooo </br>
+>MongGuard Project / Jisang, Giyong, Minwooo </br>
 우리의 몽센 지킴이. Coming Soon..
 
-## 구현 중...
-
+## 구현 완료
+- **3D_Hardware**
+    - 하드웨어 구현 파일
+    
 ## 핵심 파일구조
 - **arduino_basic_codes**
     - 여러가지 아두이노 파일 실험실
@@ -14,11 +18,23 @@
 - **Monguard_Assemble**
     - "core_code"에서 정리하여 각각 라이브러리화 진행
     - 한번에 합치기.
+- **Reference_File**
+    - 참고하였던 파일들
 
+### Joystick
+- **로봇의 조작**
 ### BLDC Motor
-[BLDC speed control](https://github.com/MiRuAE/project_monguard/tree/main/arduino_basic_codes/openloop_two_motor_speed_control/two_motor_speed_control)
-### MPU 6050
-Calibration Ok
+- **Failed**
+    - DC모터로 대체
+### MPU 9250
+- **Sleep Mode 탈출**
 ### 8X8 LED Matrix
-
+- **다양한 표정 구현**
 ### Servo Motor
+- **Tilting, 높낮이 조절**
+### Piezo Buzzer
+- **버튼 입력 시 소리 나오기**
+### Battery
+- **리튬이온 배터리**
+    - 3S, 11.4V배터리
+    - 2S, 7.4V배터리
