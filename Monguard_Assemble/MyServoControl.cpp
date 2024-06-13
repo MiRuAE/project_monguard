@@ -46,13 +46,13 @@ void MyServoControl::decreaseAngle(uint16_t value, uint16_t speed) {
               speed);
 }
 
-void MyServoControl::tiltLeft(uint16_t value, uint16_t speed) {
+void MyServoControl::tiltRight(uint16_t value, uint16_t speed) {
   updateServo(constrain(currentAngle1 + value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE),
               constrain(currentAngle2 + value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE),
               speed);
 }
 
-void MyServoControl::tiltRight(uint16_t value, uint16_t speed) {
+void MyServoControl::tiltLeft(uint16_t value, uint16_t speed) {
   updateServo(constrain(currentAngle1 - value, NEUTRAL1 - ANGLE_RANGE, NEUTRAL1 + ANGLE_RANGE),
               constrain(currentAngle2 - value, NEUTRAL2 - ANGLE_RANGE, NEUTRAL2 + ANGLE_RANGE),
               speed);

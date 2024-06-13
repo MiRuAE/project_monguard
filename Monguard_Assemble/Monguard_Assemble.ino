@@ -101,47 +101,76 @@ void loop() {
     motorControl.setDirection(2, dir_FB); // 우측 모터 방향 설정
     
     if (V_Left>V_Right){ //좌측으로 갈때 좌측 틸팅
-      if (0 <= V_Left - V_Right && V_Left - V_Right <= 150) {
-        myServo.tiltLeft(75 , 1);
+      if (0 <= V_Left - V_Right && V_Left - V_Right <= 51) {
+        myServo.tiltLeft(60, 1);
       }
-      if (151 <= V_Left - V_Right && V_Left - V_Right <= 255) {
-        myServo.tiltLeft(150, 1);
+      if (52 <= V_Left - V_Right && V_Left - V_Right <= 103) {
+        myServo.tiltLeft(120, 1);
+      }
+      if (104 <= V_Left - V_Right && V_Left - V_Right <= 155) {
+        myServo.tiltLeft(180, 1);
+      }
+      if (156 <= V_Left - V_Right && V_Left - V_Right <= 207) {
+        myServo.tiltLeft(240, 1);
       }
       else {
-        myServo.tiltLeft(0, 1);
+        myServo.tiltLeft(300, 1);
       }
     }
 
     if (V_Left <V_Right){ //우측으로 갈때 우측 틸팅
-      if (0 <= V_Right - V_Left && V_Right - V_Left <= 150) {
-        myServo.tiltRight(75, 1);
+      if (0 <= V_Right - V_Left && V_Right - V_Left <= 51) {
+        myServo.tiltRight(60, 1);
       }
-      if (150 <= V_Right - V_Left && V_Right - V_Left <= 255) {
-        myServo.tiltRight(150, 1);
+      if (52 <= V_Right - V_Left && V_Right - V_Left <= 103) {
+        myServo.tiltRight(120, 1);
+      }
+      if (104 <= V_Right - V_Left && V_Right - V_Left <= 155) {
+        myServo.tiltRight(180, 1);
+      }
+      if (156 <= V_Right - V_Left && V_Right - V_Left <= 207) {
+        myServo.tiltRight(240, 1);
       }
       else {
-        myServo.tiltRight(0, 1);
+        myServo.tiltRight(300, 1);
       }
     }
 
+    if (V_Left <V_Right){ //우측으로 갈때 우측 틸팅
+      if (0 <= V_Right - V_Left && V_Right - V_Left <= 51) {
+        myServo.tiltRight(60, 1);
+      }
+      if (52 <= V_Right - V_Left && V_Right - V_Left <= 103) {
+        myServo.tiltRight(120, 1);
+      }
+      if (104 <= V_Right - V_Left && V_Right - V_Left <= 155) {
+        myServo.tiltRight(180, 1);
+      }
+      if (156 <= V_Right - V_Left && V_Right - V_Left <= 207) {
+        myServo.tiltRight(240, 1);
+      }
+      else {
+        myServo.tiltRight(300, 1);
+      }
+    }
 
     if (V_Left == 'N' && V_Right == 'N' && dir_FB == 'N'){ //sleep 모드 활성화
       count += 1;
       delay(500);
       if (count == 10){
-        while(count == 10){
-          mpuSensor.update();
-          face.setFace("normal");
-          if (mpuSensor.isThresholdExceeded()){
-            count += 1;
-          }
+        mpuSensor.update();
+        face.setFace("normal");
+        if (mpuSensor.isThresholdExceeded()){
+          return 0;
         }
+      else {
+        return 0;
       }
-    }
+      }
     else {
       return 0;
     }
-    
+    }
 
     if (buttonA == 'A') {
       myServo.walkForward(5);
