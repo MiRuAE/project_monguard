@@ -1,10 +1,10 @@
 #ifndef MPU9250LIBRARY_H
 #define MPU9250LIBRARY_H
 
-#include <Arduino.h>  // For Serial, micros, delay, byte
+#include <Arduino.h>  
 #include <Wire.h>
 #include <MPU9250.h>
-#include <math.h>  // For sqrt, fabs, atan2f, asinf
+#include <math.h>  // mpu9250 값 계산을 위해 추가
 
 class MPU9250Library {
 public:
