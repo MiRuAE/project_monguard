@@ -20,21 +20,21 @@
     - 한번에 합치기.
 - **Reference_File**
     - 참고하였던 파일들
-
-### Joystick
-- **로봇의 조작**
-### BLDC Motor
-- **Failed**
-    - DC모터로 대체
-### MPU 9250
-- **Sleep Mode 탈출**
-### 8X8 LED Matrix
-- **다양한 표정 구현**
-### Servo Motor
-- **Tilting, 높낮이 조절**
-### Piezo Buzzer
-- **버튼 입력 시 소리 나오기**
-### Battery
-- **리튬이온 배터리**
-    - 3S, 11.4V배터리
-    - 2S, 7.4V배터리
+## 부품 별 역할
+- ### Joystick
+    - **로봇의 조작**
+- ### BLDC Motor
+    - **Failed**
+        - DC모터로 대체
+- ### MPU 9250
+    - **Sleep Mode 탈출**
+- ### 8X8 LED Matrix
+    - **다양한 표정 구현**
+- ### Servo Motor
+    - **Tilting, 높낮이 조절**
+- ### Piezo Buzzer
+    - **버튼 입력 시 소리 나오기**
+- ### Battery
+    - **리튬이온 배터리**
+        - 3S, 11.4V배터리
+        - 2S, 7.4V배터리
