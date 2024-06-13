@@ -1,10 +1,10 @@
 #include "MotorControl.h"
 
 void MotorControl::init() {
-  DDRC |= (1 << motor1DirAPin) | (1 << motor1DirBPin) | (1 << motor2DirAPin) | (1 << motor2DirBPin); // Set direction pins as outputs
-  DDRD |= (1 << motor1EnablePin) | (1 << motor2EnablePin);                                           // Set enable pins as outputs
+  DDRC |= (1 << motor1DirAPin) | (1 << motor1DirBPin) | (1 << motor2DirAPin) | (1 << motor2DirBPin); 
+  DDRD |= (1 << motor1EnablePin) | (1 << motor2EnablePin);                                           
 
-  // Timer setup for PWM on pins 5 and 6
+  // Timer setup
   TCCR0A = (1 << COM0A1) | (1 << COM0B1) | (1 << WGM00); // Fast PWM, 8-bit
   TCCR0B = (1 << CS01);                                  // Prescaler 8
 }
