@@ -38,3 +38,5 @@
     - **리튬이온 배터리**
         - 3S, 11.4V배터리
         - 2S, 7.4V배터리
+
+![20240613_113435](https://github.com/MiRuAE/project_monguard/assets/133827754/22e897d0-5321-47a7-8041-f2ef37fb5c24)
