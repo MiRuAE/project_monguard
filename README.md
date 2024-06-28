@@ -3,6 +3,7 @@
 # project_monguard
 >MongGuard Project / Jisang, Giyong, Minwooo </br>
 우리의 몽센 지킴이. Coming Soon..
+>[MonGuard_ Video](https://youtu.be/6RIXS6Tz6B4?si=BkXUfExFJoiZnztz)
 
 ## 구현 완료
 - **3D_Hardware**
@@ -40,3 +41,4 @@
         - 2S, 7.4V배터리
 
 ![20240613_113435](https://github.com/MiRuAE/project_monguard/assets/133827754/22e897d0-5321-47a7-8041-f2ef37fb5c24)
+
